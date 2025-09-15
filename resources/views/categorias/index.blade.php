@@ -18,12 +18,27 @@
 
                     <p>Lista de Categorias:</p>
 
-                    @foreach ($categorias as $categoria)
-                        <div class="py-2">
-                            <p><strong>Nome:</strong> {{ $categoria->nome }}</p>
-                            <p><strong>Descrição:</strong> {{ $categoria->descricao }}</p>
+                    @if (session('sucesso'))
+                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-800 border border-green-400 text-green-700 dark:text-green-300 rounded" role="alert">
+                            <p class="font-bold">Sucesso!</p>
+                            <p>{{ session('sucesso') }}</p>
                         </div>
-                    @endforeach
+                    @endif
+
+                    @foreach ($categorias as $categoria)
+                    <div class="py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        {{-- Nome e Descrição --}}
+                        <div>
+                            <p class="font-semibold">{{ $categoria->nome }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $categoria->descricao }}</p>
+                        </div>
+
+                        {{-- Botão de Editar --}}
+                        <a href="{{ route('categorias.edit', $categoria->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded-md text-xs uppercase font-semibold hover:bg-yellow-600">
+                            Editar
+                        </a>
+                    </div>
+                @endforeach
 
                 </div>
             </div>

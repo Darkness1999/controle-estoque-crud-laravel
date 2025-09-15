@@ -47,21 +47,28 @@ class CategoriaController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    public function edit(Categoria $categoria)
+        {
+            return view('categorias.edit', ['categoria' => $categoria]);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    public function update(Request $request, Categoria $categoria)
+        {
+            // 1. Validação dos dados (mesmas regras do store)
+            $request->validate([
+                'nome' => 'required|string|max:255',
+                'descricao' => 'nullable|string',
+            ]);
+
+            // 2. Atualizar os dados da categoria no banco
+            $categoria->update([
+                'nome' => $request->nome,
+                'descricao' => $request->descricao,
+            ]);
+
+            // 3. Redirecionar para a página de listagem
+            return redirect()->route('categorias.index')->with('sucesso', 'Categoria atualizada com sucesso!');
+        }
 
     /**
      * Remove the specified resource from storage.

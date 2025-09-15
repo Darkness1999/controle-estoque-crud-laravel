@@ -16,20 +16,27 @@ class CategoriaController extends Controller
         return view('categorias.index', ['categorias' => $categorias]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('categorias.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        // 1. Validação dos dados
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
+        ]);
+
+        // 2. Salvar no banco de dados
+        Categoria::create([
+            'nome' => $request->nome,
+            'descricao' => $request->descricao,
+        ]);
+
+        // 3. Redirecionar para a página de listagem
+        return redirect()->route('categorias.index');
     }
 
     /**

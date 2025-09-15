@@ -26,19 +26,31 @@
                     @endif
 
                     @foreach ($categorias as $categoria)
-                    <div class="py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        {{-- Nome e Descrição --}}
-                        <div>
-                            <p class="font-semibold">{{ $categoria->nome }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $categoria->descricao }}</p>
-                        </div>
+                        <div class="py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            {{-- Nome e Descrição --}}
+                            <div>
+                                <p class="font-semibold">{{ $categoria->nome }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $categoria->descricao }}</p>
+                            </div>
 
-                        {{-- Botão de Editar --}}
-                        <a href="{{ route('categorias.edit', $categoria->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded-md text-xs uppercase font-semibold hover:bg-yellow-600">
-                            Editar
-                        </a>
-                    </div>
-                @endforeach
+                            {{-- Botões de Ação --}}
+                            <div class="flex space-x-2">
+                                {{-- Botão de Editar --}}
+                                <a href="{{ route('categorias.edit', $categoria->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded-md text-xs uppercase font-semibold hover:bg-yellow-600">
+                                    Editar
+                                </a>
+
+                                {{-- FORMULÁRIO DE APAGAR --}}
+                                <form method="POST" action="{{ route('categorias.destroy', $categoria->id) }}" onsubmit="return confirm('Você tem certeza que deseja apagar esta categoria?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-md text-xs uppercase font-semibold hover:bg-red-700">
+                                        Apagar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
 
                 </div>
             </div>

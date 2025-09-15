@@ -70,11 +70,12 @@ class CategoriaController extends Controller
             return redirect()->route('categorias.index')->with('sucesso', 'Categoria atualizada com sucesso!');
         }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+        public function destroy(Categoria $categoria)
+        {
+            // Apaga a categoria do banco de dados
+            $categoria->delete();
+
+            // Redireciona de volta para a lista com uma mensagem de sucesso
+            return redirect()->route('categorias.index')->with('sucesso', 'Categoria apagada com sucesso!');
+        }
 }

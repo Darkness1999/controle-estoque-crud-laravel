@@ -9,6 +9,10 @@ class Fornecedor extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     * @var array<int, string>
+     */
     protected $fillable = [
         'nome',
         'cnpj',
@@ -17,7 +21,9 @@ class Fornecedor extends Model
         'endereco',
     ];
 
-    // Um Fornecedor TEM MUITOS Produtos
+    /**
+     * Um Fornecedor TEM MUITOS Produtos.
+     */
     public function produtos()
     {
         return $this->hasMany(Produto::class);

@@ -9,21 +9,47 @@ class Produto extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'nome', 'descricao', 'codigo_interno', 'sku',
-        'estoque_atual', 'estoque_minimo', 'preco_custo', 'preco_venda',
-        'categoria_id', 'fornecedor_id'
+        'nome',
+        'descricao',
+        'categoria_id',
+        'marca_id',
+        'fornecedor_id',
     ];
 
-    // Um Produto PERTENCE A UMA Categoria
+    /**
+     * Um Produto PERTENCE A UMA Categoria.
+     */
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
     }
 
-    // Um Produto PERTENCE A UM Fornecedor
+    /**
+     * Um Produto PERTENCE A UMA Marca.
+     */
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class);
+    }
+
+    /**
+     * Um Produto PERTENCE A UM Fornecedor.
+     */
     public function fornecedor()
     {
         return $this->belongsTo(Fornecedor::class);
+    }
+
+    /**
+     * Um Produto TEM MUITAS Variações (SKUs).
+     */
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class);
     }
 }

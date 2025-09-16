@@ -11,7 +11,6 @@ class Categoria extends Model
 
     /**
      * The attributes that are mass assignable.
-     *
      * @var array<int, string>
      */
     protected $fillable = [
@@ -19,10 +18,11 @@ class Categoria extends Model
         'descricao',
     ];
 
-    // Uma Categoria TEM MUITOS Produtos
+    /**
+     * Uma Categoria TEM MUITOS Produtos.
+     */
     public function produtos()
     {
         return $this->hasMany(Produto::class);
     }
 }
-

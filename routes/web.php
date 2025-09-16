@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\FornecedorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,5 +20,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('categorias', CategoriaController::class)->middleware('auth');
+
+
+Route::resource('fornecedores', FornecedorController::class)
+    ->parameters(['fornecedores' => 'fornecedor'])
+    ->middleware('auth');
 
 require __DIR__.'/auth.php';

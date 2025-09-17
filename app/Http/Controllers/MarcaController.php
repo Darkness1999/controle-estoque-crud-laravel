@@ -12,7 +12,8 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        //
+        $marcas = Marca::latest()->get();
+        return view('marcas.index', compact('marcas'));
     }
 
     /**
@@ -20,7 +21,7 @@ class MarcaController extends Controller
      */
     public function create()
     {
-        //
+        return view('marcas.create');
     }
 
     /**
@@ -28,15 +29,13 @@ class MarcaController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'nome' => 'required|string|max:255|unique:marcas',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Marca $marca)
-    {
-        //
+        Marca::create($request->all());
+
+        return redirect()->route('marcas.index')->with('sucesso', 'Marca criada com sucesso!');
     }
 
     /**
@@ -44,7 +43,7 @@ class MarcaController extends Controller
      */
     public function edit(Marca $marca)
     {
-        //
+        return view('marcas.edit', compact('marca'));
     }
 
     /**
@@ -52,7 +51,13 @@ class MarcaController extends Controller
      */
     public function update(Request $request, Marca $marca)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255|unique:marcas,nome,' . $marca->id,
+        ]);
+
+        $marca->update($request->all());
+
+        return redirect()->route('marcas.index')->with('sucesso', 'Marca atualizada com sucesso!');
     }
 
     /**
@@ -60,6 +65,7 @@ class MarcaController extends Controller
      */
     public function destroy(Marca $marca)
     {
-        //
+        $marca->delete();
+        return redirect()->route('marcas.index')->with('sucesso', 'Marca apagada com sucesso!');
     }
 }

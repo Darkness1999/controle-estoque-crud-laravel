@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\MarcaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +30,10 @@ Route::resource('fornecedores', FornecedorController::class)
 
 Route::resource('produtos', ProdutoController::class)
     ->parameters(['produtos' => 'produto'])
+    ->middleware('auth');
+
+Route::resource('marcas', MarcaController::class)
+    ->parameters(['marcas' => 'marca'])
     ->middleware('auth');
 
 require __DIR__.'/auth.php';

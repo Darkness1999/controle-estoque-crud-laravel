@@ -6,6 +6,8 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\AtributoController;
+use App\Http\Controllers\ValorAtributoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,24 +18,40 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    Route::resource('categorias', CategoriaController::class)->middleware('auth');
+
+    Route::resource('fornecedores', FornecedorController::class)
+        ->parameters(['fornecedores' => 'fornecedor'])
+        ->middleware('auth');
+
+    Route::resource('produtos', ProdutoController::class)
+        ->parameters(['produtos' => 'produto'])
+        ->middleware('auth');
+
+    Route::resource('marcas', MarcaController::class)
+        ->parameters(['marcas' => 'marca'])
+        ->middleware('auth');
+
+    Route::resource('atributos', AtributoController::class)
+        ->parameters(['atributos' => 'atributo'])
+        ->middleware('auth');
+
+    // Rota para o CRUD de Atributos (Pai)
+        Route::resource('atributos', AtributoController::class)
+            ->parameters(['atributos' => 'atributo']);
+            
+        // Rotas aninhadas para os Valores de Atributo (Filhos)
+        Route::get('atributos/{atributo}/valores', [ValorAtributoController::class, 'index'])->name('valores.index');
+        Route::get('atributos/{atributo}/valores/create', [ValorAtributoController::class, 'create'])->name('valores.create');
+        Route::post('atributos/{atributo}/valores', [ValorAtributoController::class, 'store'])->name('valores.store');
+        Route::delete('valores/{valorAtributo}', [ValorAtributoController::class, 'destroy'])->name('valores.destroy');
 });
-
-Route::resource('categorias', CategoriaController::class)->middleware('auth');
-
-
-Route::resource('fornecedores', FornecedorController::class)
-    ->parameters(['fornecedores' => 'fornecedor'])
-    ->middleware('auth');
-
-Route::resource('produtos', ProdutoController::class)
-    ->parameters(['produtos' => 'produto'])
-    ->middleware('auth');
-
-Route::resource('marcas', MarcaController::class)
-    ->parameters(['marcas' => 'marca'])
-    ->middleware('auth');
 
 require __DIR__.'/auth.php';

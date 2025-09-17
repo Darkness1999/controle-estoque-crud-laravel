@@ -78,30 +78,33 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">Variações de Produto (SKUs)</h3>
+                    
                     <div class="mb-6">
                         <h4 class="font-semibold mb-2">Variações Cadastradas</h4>
                         <div class="overflow-x-auto">
                             <table class="min-w-full">
-                                <thead class="border-b">
+                                <thead class="border-b dark:border-gray-700">
                                     <tr>
-                                        <th class="px-4 py-2 text-left">Atributos</th>
-                                        <th class="px-4 py-2 text-left">SKU</th>
-                                        <th class="px-4 py-2 text-left">Preço Venda</th>
-                                        <th class="px-4 py-2 text-left">Estoque</th>
-                                        <th class="px-4 py-2 text-left">Ações</th>
+                                        <th class="px-4 py-2 text-left text-sm">Atributos</th>
+                                        <th class="px-4 py-2 text-left text-sm">SKU</th>
+                                        <th class="px-4 py-2 text-left text-sm">Preço Venda</th>
+                                        <th class="px-4 py-2 text-left text-sm">Estoque Atual</th>
+                                        <th class="px-4 py-2 text-left text-sm">Estoque Mínimo</th>
+                                        <th class="px-4 py-2 text-left text-sm">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($produto->variations as $variation)
-                                        <tr class="border-b">
-                                            <td class="px-4 py-2">
+                                        <tr class="border-b dark:border-gray-700">
+                                            <td class="px-4 py-2 text-sm">
                                                 @foreach ($variation->attributeValues as $value)
-                                                    <span class="text-sm font-medium">{{ $value->atributo->nome }}:</span> <span class="text-sm">{{ $value->valor }}</span>@if (!$loop->last), @endif
+                                                    <span class="font-medium">{{ $value->atributo->nome }}:</span> <span>{{ $value->valor }}</span>@if (!$loop->last), @endif
                                                 @endforeach
                                             </td>
-                                            <td class="px-4 py-2">{{ $variation->sku }}</td>
-                                            <td class="px-4 py-2">R$ {{ number_format($variation->preco_venda, 2, ',', '.') }}</td>
-                                            <td class="px-4 py-2">{{ $variation->estoque_atual }}</td>
+                                            <td class="px-4 py-2 text-sm">{{ $variation->sku }}</td>
+                                            <td class="px-4 py-2 text-sm">R$ {{ number_format($variation->preco_venda, 2, ',', '.') }}</td>
+                                            <td class="px-4 py-2 text-sm">{{ $variation->estoque_atual }}</td>
+                                            <td class="px-4 py-2 text-sm">{{ $variation->estoque_minimo }}</td>
                                             <td class="px-4 py-2 flex items-center space-x-4">
                                                 <button @click="isModalOpen = true; currentVariation = {{ $variation->toJson() }}" class="text-yellow-600 hover:text-yellow-900 text-sm font-semibold">Editar</button>
                                                 <form method="POST" action="{{ route('variations.destroy', $variation->id) }}" onsubmit="return confirm('Tem certeza?');">
@@ -112,14 +115,14 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="5" class="px-4 py-2 text-center text-sm">Nenhuma variação cadastrada.</td></tr>
+                                        <tr><td colspan="6" class="px-4 py-2 text-center text-sm">Nenhuma variação cadastrada.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="mt-6 border-t pt-6">
+                    <div class="mt-6 border-t pt-6 dark:border-gray-700">
                         <h4 class="font-semibold mb-4">Adicionar Nova Variação</h4>
                         <form method="POST" action="{{ route('variations.store', $produto->id) }}" class="space-y-4">
                             @csrf
@@ -139,26 +142,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                                 <div>
                                     <label for="sku" class="block font-medium text-sm">SKU</label>
-                                    <input id="sku" name="sku" type="text" class="block mt-1 w-full ..." required>
+                                    <input id="sku" name="sku" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
                                 </div>
                                 <div>
-                                    <label for="preco_custo" class="block font-medium text-sm">Preço de Custo</label>
-                                    <input id="preco_custo" name="preco_custo" type="text" class="block mt-1 w-full ...">
+                                    <label for="preco_custo" class="block font-medium text-sm">Preço Custo</label>
+                                    <input id="preco_custo" name="preco_custo" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                 </div>
                                 <div>
-                                    <label for="preco_venda" class="block font-medium text-sm">Preço de Venda</label>
-                                    <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full ..." required>
+                                    <label for="preco_venda" class="block font-medium text-sm">Preço Venda</label>
+                                    <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
                                 </div>
                                 <div>
                                     <label for="estoque_atual" class="block font-medium text-sm">Estoque Inicial</label>
-                                    <input id="estoque_atual" name="estoque_atual" type="number" value="0" class="block mt-1 w-full ..." required>
+                                    <input id="estoque_atual" name="estoque_atual" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
                                 </div>
                                 <div>
                                     <label for="estoque_minimo" class="block font-medium text-sm">Estoque Mínimo</label>
-                                    <input id="estoque_minimo" name="estoque_minimo" type="number" value="0" class="block mt-1 w-full ...">
+                                    <input id="estoque_minimo" name="estoque_minimo" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                 </div>
                             </div>
-
                             <div class="flex justify-end mt-4">
                                 <button type="submit" class="px-4 py-2 bg-green-600 rounded-md font-semibold text-xs text-white uppercase hover:bg-green-700">
                                     Salvar Variação
@@ -166,12 +168,13 @@
                             </div>
                         </form>
                     </div>
+
                 </div>
             </div>
         </div>
 
         <div x-show="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="isModalOpen = false" style="display: none;">
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-lg" @click.away="isModalOpen = false">
+            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-2xl" @click.away="isModalOpen = false">
                 <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Editar Variação</h3>
                 <form :action="`/variations/${currentVariation.id}`" method="POST">
                     @csrf
@@ -184,22 +187,21 @@
                         <div class="grid grid-cols-4 gap-4">
                             <div>
                                 <label for="edit_preco_custo" class="block text-sm font-medium">Preço Custo</label>
-                                <input type="text" id="edit_preco_custo" name="preco_custo" x-model="currentVariation.preco_custo" class="mt-1 block w-full ...">
+                                <input type="text" id="edit_preco_custo" name="preco_custo" x-model="currentVariation.preco_custo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </div>
                             <div>
                                 <label for="edit_preco_venda" class="block text-sm font-medium">Preço Venda</label>
-                                <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full ...">
+                                <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </div>
                             <div>
-                                <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</label>
-                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full ...">
+                                <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</bal>
+                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </div>
                             <div>
                                 <label for="edit_estoque_minimo" class="block text-sm font-medium">Estoque Mínimo</label>
-                                <input type="number" id="edit_estoque_minimo" name="estoque_minimo" x-model="currentVariation.estoque_minimo" class="mt-1 block w-full ...">
+                                <input type="number" id="edit_estoque_minimo" name="estoque_minimo" x-model="currentVariation.estoque_minimo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </div>
                         </div>
-
                         <div class="flex justify-end space-x-4 mt-6">
                             <button type="button" @click="isModalOpen = false" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-md text-sm text-gray-800 dark:text-gray-200">Cancelar</button>
                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm">Salvar Alterações</button>

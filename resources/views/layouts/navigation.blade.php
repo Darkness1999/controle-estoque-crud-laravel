@@ -39,6 +39,10 @@
                     <x-nav-link :href="route('estoque.movimentar')" :active="request()->routeIs('estoque.movimentar')">
                         {{ __('Movimentar Estoque') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('relatorios.movimentacoes')" :active="request()->routeIs('relatorios.movimentacoes')">
+                        {{ __('Relatórios') }}
+                    </x-nav-link>
                 </div>
             </div>
 

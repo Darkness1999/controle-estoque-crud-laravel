@@ -11,6 +11,7 @@ use App\Http\Controllers\AtributoController;
 use App\Http\Controllers\ValorAtributoController;
 use App\Http\Controllers\ProductVariationController;
 use App\Http\Controllers\MovimentacaoEstoqueController;
+use App\Http\Controllers\RelatorioController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,6 +63,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/movimentar-estoque', [MovimentacaoEstoqueController::class, 'index'])->name('estoque.movimentar');
     Route::post('/movimentar-estoque', [MovimentacaoEstoqueController::class, 'store'])->name('estoque.store');
+
+    Route::get('/relatorios/movimentacoes', [RelatorioController::class, 'movimentacoes'])->name('relatorios.movimentacoes');
 });
 
 require __DIR__.'/auth.php';

@@ -17,19 +17,33 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor do Estoque (Custo)</h3>
-                    <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">R$ {{ number_format($valorEstoqueCusto, 2, ',', '.') }}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total de Saídas no Período</h3>
+                    <div class="flex items-baseline space-x-2 mt-1">
+                        <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">{{ $totalSaidasAtual }}</p>
+                        @if (isset($tendenciaSaidas))
+                            <span class="text-sm font-semibold @if($tendenciaSaidas['direcao'] == 'subiu') text-green-500 @else text-red-500 @endif">
+                                @if($tendenciaSaidas['direcao'] == 'subiu') ▲ @else ▼ @endif
+                                {{ number_format($tendenciaSaidas['percentagem'], 1, ',') }}%
+                            </span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-gray-400">vs. período anterior</p>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor do Estoque (Venda)</h3>
                     <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">R$ {{ number_format($valorEstoqueVenda, 2, ',', '.') }}</p>
                 </div>
 
-                <div class="bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-400 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor do Estoque (Custo)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">R$ {{ number_format($valorEstoqueCusto, 2, ',', '.') }}</p>
+                </div>
+
+                <div class="bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-300">Alertas de Estoque Baixo</h3>
                     <p class="mt-1 text-3xl font-semibold text-yellow-900 dark:text-yellow-200">{{ $countEstoqueBaixo }} Variações</p>
                 </div>

@@ -11,10 +11,21 @@ use Illuminate\Http\Request;
 
 class ProdutoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $produtos = Produto::with('categoria', 'marca', 'variations')->latest()->get();
-        return view('produtos.index', ['produtos' => $produtos]);
+        $query = Produto::with('categoria', 'marca', 'variations')->latest();
+
+        // Lógica do Filtro
+        if ($request->filled('categoria_id')) {
+            $query->where('categoria_id', $request->categoria_id);
+        }
+
+        $produtos = $query->get();
+
+        // Usado para mostrar o nome da categoria no título quando filtrado
+        $categoriaFiltro = $request->filled('categoria_id') ? Categoria::find($request->categoria_id) : null;
+
+        return view('produtos.index', compact('produtos', 'categoriaFiltro'));
     }
 
     public function create()

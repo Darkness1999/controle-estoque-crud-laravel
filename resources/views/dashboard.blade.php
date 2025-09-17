@@ -18,7 +18,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total de Saídas no Período</h3>
                     <div class="flex items-baseline space-x-2 mt-1">
@@ -42,12 +41,11 @@
                     <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor do Estoque (Custo)</h3>
                     <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">R$ {{ number_format($valorEstoqueCusto, 2, ',', '.') }}</p>
                 </div>
-
+                
                 <div class="bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-300">Alertas de Estoque Baixo</h3>
                     <p class="mt-1 text-3xl font-semibold text-yellow-900 dark:text-yellow-200">{{ $countEstoqueBaixo }} Variações</p>
                 </div>
-
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
@@ -130,42 +128,67 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Prepara os dados para o gráfico de categorias
+        const categoriasData = @json($categoriasPorValor);
+        const categoriaLabels = categoriasData.map(item => item.nome);
+        const categoriaValores = categoriasData.map(item => item.valor_total);
+
         // Gráfico de Linha: Saídas no Período
         const saidasCtx = document.getElementById('saidasChart');
-        new Chart(saidasCtx, {
-            type: 'line',
-            data: {
-                labels: @json($labelsSaidas),
-                datasets: [{
-                    label: 'Quantidade de Saídas',
-                    data: @json($dataSaidas),
-                    borderColor: 'rgba(79, 70, 229, 1)',
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-        });
+        if (saidasCtx) {
+            new Chart(saidasCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($labelsSaidas),
+                    datasets: [{
+                        label: 'Quantidade de Saídas',
+                        data: @json($dataSaidas),
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+        }
 
         // Gráfico de Rosca: Categorias por Valor
         const categoriasCtx = document.getElementById('categoriasChart');
-        new Chart(categoriasCtx, {
-            type: 'doughnut',
-            data: {
-                labels: @json($labelsCategorias),
-                datasets: [{
-                    label: 'Valor Total em Estoque',
-                    data: @json($dataCategorias),
-                    backgroundColor: [
-                        'rgba(79, 70, 229, 0.8)', 'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)',
-                        'rgba(153, 102, 255, 0.8)'
-                    ],
-                    hoverOffset: 4
-                }]
-            }
-        });
+        if (categoriasCtx) {
+            new Chart(categoriasCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoriaLabels,
+                    datasets: [{
+                        label: 'Valor Total em Estoque',
+                        data: categoriaValores,
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.8)', 'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const chartElement = elements[0];
+                            const index = chartElement.index;
+                            const categoriaId = categoriasData[index].id;
+                            
+                            if(categoriaId) {
+                               window.location.href = `{{ route('produtos.index') }}?categoria_id=${categoriaId}`;
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    }
+                }
+            });
+        }
     </script>
     @endpush
 </x-app-layout>

@@ -9,6 +9,7 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\AtributoController;
 use App\Http\Controllers\ValorAtributoController;
 use App\Http\Controllers\ProductVariationController;
+use App\Http\Controllers\MovimentacaoEstoqueController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::put('variations/{variation}', [ProductVariationController::class, 'update'])->name('variations.update');
     Route::post('produtos/{produto}/variations', [ProductVariationController::class, 'store'])->name('variations.store');
     Route::delete('variations/{variation}', [ProductVariationController::class, 'destroy'])->name('variations.destroy');
+
+    Route::get('/movimentar-estoque', [MovimentacaoEstoqueController::class, 'index'])->name('estoque.movimentar');
+    Route::post('/movimentar-estoque', [MovimentacaoEstoqueController::class, 'store'])->name('estoque.store');
 });
 
 require __DIR__.'/auth.php';

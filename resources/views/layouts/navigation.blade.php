@@ -35,6 +35,10 @@
                     <x-nav-link :href="route('atributos.index')" :active="request()->routeIs('atributos.*')">
                         {{ __('Atributos') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('estoque.movimentar')" :active="request()->routeIs('estoque.movimentar')">
+                        {{ __('Movimentar Estoque') }}
+                    </x-nav-link>
                 </div>
             </div>
 

@@ -19,6 +19,7 @@ class ProductVariation extends Model
         'preco_venda',
         'preco_custo',
         'estoque_atual',
+        'estoque_minimo',
     ];
 
     /**

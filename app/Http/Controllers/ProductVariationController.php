@@ -15,12 +15,13 @@ class ProductVariationController extends Controller
             'preco_custo' => 'nullable|numeric|min:0',
             'preco_venda' => 'required|numeric|min:0',
             'estoque_atual' => 'required|integer|min:0',
+            'estoque_minimo' => 'nullable|integer|min:0',
             'attribute_values' => 'required|array',
             'attribute_values.*' => 'exists:valor_atributos,id',
         ]);
 
         $variation = $produto->variations()->create($request->only([
-            'sku', 'preco_venda', 'estoque_atual', 'preco_custo'
+        'sku', 'preco_venda', 'estoque_atual', 'preco_custo', 'estoque_minimo'
         ]));
 
         $variation->attributeValues()->attach($request->attribute_values);
@@ -42,9 +43,10 @@ class ProductVariationController extends Controller
             'preco_custo' => 'nullable|numeric|min:0',
             'preco_venda' => 'required|numeric|min:0',
             'estoque_atual' => 'required|integer|min:0',
+            'estoque_minimo' => 'nullable|integer|min:0',
         ]);
 
-        $variation->update($request->only(['sku', 'preco_custo', 'preco_venda', 'estoque_atual']));
+        $variation->update($request->only(['sku', 'preco_custo', 'preco_venda', 'estoque_atual', 'estoque_minimo']));
 
         return redirect()->route('produtos.edit', $variation->produto_id)->with('sucesso', 'Variação atualizada com sucesso!');
     }

@@ -136,24 +136,29 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                                 <div>
                                     <label for="sku" class="block font-medium text-sm">SKU</label>
-                                    <input id="sku" name="sku" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
+                                    <input id="sku" name="sku" type="text" class="block mt-1 w-full ..." required>
                                 </div>
                                 <div>
-                                    <label for="preco_custo" class="block font-medium text-sm">Preço de Custo (R$)</label>
-                                    <input id="preco_custo" name="preco_custo" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    <label for="preco_custo" class="block font-medium text-sm">Preço de Custo</label>
+                                    <input id="preco_custo" name="preco_custo" type="text" class="block mt-1 w-full ...">
                                 </div>
                                 <div>
-                                    <label for="preco_venda" class="block font-medium text-sm">Preço de Venda (R$)</label>
-                                    <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
+                                    <label for="preco_venda" class="block font-medium text-sm">Preço de Venda</label>
+                                    <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full ..." required>
                                 </div>
                                 <div>
                                     <label for="estoque_atual" class="block font-medium text-sm">Estoque Inicial</label>
-                                    <input id="estoque_atual" name="estoque_atual" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
+                                    <input id="estoque_atual" name="estoque_atual" type="number" value="0" class="block mt-1 w-full ..." required>
+                                </div>
+                                <div>
+                                    <label for="estoque_minimo" class="block font-medium text-sm">Estoque Mínimo</label>
+                                    <input id="estoque_minimo" name="estoque_minimo" type="number" value="0" class="block mt-1 w-full ...">
                                 </div>
                             </div>
+
                             <div class="flex justify-end mt-4">
                                 <button type="submit" class="px-4 py-2 bg-green-600 rounded-md font-semibold text-xs text-white uppercase hover:bg-green-700">
                                     Salvar Variação
@@ -176,20 +181,25 @@
                             <label for="edit_sku" class="block text-sm font-medium">SKU</label>
                             <input type="text" id="edit_sku" name="sku" x-model="currentVariation.sku" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                         </div>
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-4 gap-4">
                             <div>
                                 <label for="edit_preco_custo" class="block text-sm font-medium">Preço Custo</label>
-                                <input type="text" id="edit_preco_custo" name="preco_custo" x-model="currentVariation.preco_custo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                <input type="text" id="edit_preco_custo" name="preco_custo" x-model="currentVariation.preco_custo" class="mt-1 block w-full ...">
                             </div>
                             <div>
                                 <label for="edit_preco_venda" class="block text-sm font-medium">Preço Venda</label>
-                                <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full ...">
                             </div>
                             <div>
                                 <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</label>
-                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full ...">
+                            </div>
+                            <div>
+                                <label for="edit_estoque_minimo" class="block text-sm font-medium">Estoque Mínimo</label>
+                                <input type="number" id="edit_estoque_minimo" name="estoque_minimo" x-model="currentVariation.estoque_minimo" class="mt-1 block w-full ...">
                             </div>
                         </div>
+
                         <div class="flex justify-end space-x-4 mt-6">
                             <button type="button" @click="isModalOpen = false" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-md text-sm text-gray-800 dark:text-gray-200">Cancelar</button>
                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm">Salvar Alterações</button>

@@ -29,8 +29,8 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nome</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categoria</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estoque</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Preço Venda</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Marca</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estoque Total</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ações</th>
                                 </tr>
                             </thead>
@@ -39,10 +39,11 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $produto->nome }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $produto->categoria->nome }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $produto->estoque_atual }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">R$ {{ number_format($produto->preco_venda, 2, ',', '.') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $produto->marca->nome }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">{{ $produto->total_stock }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="{{ route('produtos.edit', $produto->id) }}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
+                                        <a href="{{ route('produtos.show', $produto->id) }}" class="text-blue-600 hover:text-blue-900 mr-4">Detalhes</a>
+                                        <a href="{{ route('produtos.edit', $produto->id) }}" class="text-yellow-600 hover:text-yellow-900">Gerenciar</a>
                                         <form method="POST" action="{{ route('produtos.destroy', $produto->id) }}" class="inline-block ml-4" onsubmit="return confirm('Tem certeza?');">
                                             @csrf
                                             @method('DELETE')

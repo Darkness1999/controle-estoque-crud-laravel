@@ -8,6 +8,7 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\AtributoController;
 use App\Http\Controllers\ValorAtributoController;
+use App\Http\Controllers\ProductVariationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,14 +45,20 @@ Route::middleware('auth')->group(function () {
         ->middleware('auth');
 
     // Rota para o CRUD de Atributos (Pai)
-        Route::resource('atributos', AtributoController::class)
-            ->parameters(['atributos' => 'atributo']);
+    Route::resource('atributos', AtributoController::class)
+        ->parameters(['atributos' => 'atributo']);
             
-        // Rotas aninhadas para os Valores de Atributo (Filhos)
-        Route::get('atributos/{atributo}/valores', [ValorAtributoController::class, 'index'])->name('valores.index');
-        Route::get('atributos/{atributo}/valores/create', [ValorAtributoController::class, 'create'])->name('valores.create');
-        Route::post('atributos/{atributo}/valores', [ValorAtributoController::class, 'store'])->name('valores.store');
-        Route::delete('valores/{valorAtributo}', [ValorAtributoController::class, 'destroy'])->name('valores.destroy');
+    // Rotas aninhadas para os Valores de Atributo (Filhos)
+    Route::get('atributos/{atributo}/valores', [ValorAtributoController::class, 'index'])   ->name('valores.index');
+    Route::get('atributos/{atributo}/valores/create', [ValorAtributoController::class, 'create'])->name('valores.create');
+    Route::post('atributos/{atributo}/valores', [ValorAtributoController::class, 'store'])->name('valores.store');
+    Route::delete('valores/{valorAtributo}', [ValorAtributoController::class, 'destroy'])->name('valores.destroy');
+
+    // Rotas para criar e apagar variações de um produto específico
+    Route::get('variations/{variation}/edit', [ProductVariationController::class, 'edit'])->name('variations.edit');
+    Route::put('variations/{variation}', [ProductVariationController::class, 'update'])->name('variations.update');
+    Route::post('produtos/{produto}/variations', [ProductVariationController::class, 'store'])->name('variations.store');
+    Route::delete('variations/{variation}', [ProductVariationController::class, 'destroy'])->name('variations.destroy');
 });
 
 require __DIR__.'/auth.php';

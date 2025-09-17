@@ -52,4 +52,15 @@ class Produto extends Model
     {
         return $this->hasMany(ProductVariation::class);
     }
+
+    public function getTotalStockAttribute()
+    {
+        return $this->variations()->sum('estoque_atual');
+    }
+
+    public function getPrecoMinimoAttribute()
+    {
+        // Pega o valor mínimo da coluna 'preco_venda' das variações relacionadas
+        return $this->variations()->min('preco_venda');
+    }
 }

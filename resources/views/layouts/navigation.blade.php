@@ -33,10 +33,13 @@
                     <x-nav-link :href="route('relatorios.movimentacoes')" :active="request()->routeIs('relatorios.movimentacoes')">
                         {{ __('Relatórios') }}
                     </x-nav-link>
-
-                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                        {{ __('Utilizadores') }}
-                    </x-nav-link>
+                    
+                    @can('access-admin-area')
+                    <!-- Como funciona: A diretiva @ can('access-admin-area') pergunta ao nosso Gate: "O utilizador atual tem permissão?". Se a resposta for true, o HTML dentro do bloco é renderizado. Se for false, ele é completamente omitido. -->
+                        <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                            {{ __('Utilizadores') }}
+                        </x-responsive-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -107,9 +110,12 @@
                 {{ __('Relatórios') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                {{ __('Utilizadores') }}
-            </x-responsive-nav-link>
+            @can('access-admin-area')
+            <!-- Aqui está a parte importante: o menu "Utilizadores" só aparece se o utilizador tiver permissão. A diretiva "@ can" verifica o Gate que definimos no AppServiceProvider. Se o utilizador for admin, ele verá o link; caso contrário, não verá nada -->
+                <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                    {{ __('Utilizadores') }}
+                </x-nav-link>
+            @endcan
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

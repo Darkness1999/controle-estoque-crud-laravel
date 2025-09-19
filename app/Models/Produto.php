@@ -19,6 +19,8 @@ class Produto extends Model
         'categoria_id',
         'marca_id',
         'fornecedor_id',
+        'codigo_barras',
+        'foto_path',
     ];
 
     /**
@@ -62,5 +64,13 @@ class Produto extends Model
     {
         // Pega o valor mínimo da coluna 'preco_venda' das variações relacionadas
         return $this->variations()->min('preco_venda');
+    }
+
+    /**
+     * Um Produto pode ter MUITOS Atributos.
+     */
+    public function attributes()
+    {
+        return $this->belongsToMany(Atributo::class, 'attribute_product', 'produto_id', 'atributo_id');
     }
 }

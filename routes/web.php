@@ -79,6 +79,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
         Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
     });
+
+    // Rota para sincronizar atributos de um produto específico
+    Route::put('produtos/{produto}/attributes', [ProdutoController::class, 'syncAttributes'])->name('produtos.attributes.sync');
 });
 
 require __DIR__.'/auth.php';

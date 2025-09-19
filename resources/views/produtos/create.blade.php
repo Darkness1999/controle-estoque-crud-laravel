@@ -10,12 +10,23 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
-                    <form method="POST" action="{{ route('produtos.store') }}" class="space-y-4">
+                    <form method="POST" action="{{ route('produtos.store') }}" class="space-y-4" enctype="multipart/form-data">
                         @csrf
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nome" class="block font-medium text-sm">Nome do Produto</label>
+                                <input id="nome" name="nome" type="text" class="block mt-1 w-full ..." required>
+                            </div>
+                            <div>
+                                <label for="codigo_barras" class="block font-medium text-sm">Código de Barras</label>
+                                <input id="codigo_barras" name="codigo_barras" type="text" class="block mt-1 w-full ...">
+                            </div>
+                        </div>
+
                         <div>
-                            <label for="nome" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Nome do Produto</label>
-                            <input id="nome" name="nome" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
+                            <label for="foto" class="block font-medium text-sm">Foto do Produto</label>
+                            <input id="foto" name="foto" type="file" class="block mt-1 w-full">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

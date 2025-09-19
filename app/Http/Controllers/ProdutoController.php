@@ -8,23 +8,18 @@ use App\Models\Fornecedor;
 use App\Models\Marca;
 use App\Models\Atributo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProdutoController extends Controller
 {
     public function index(Request $request)
     {
         $query = Produto::with('categoria', 'marca', 'variations')->latest();
-
-        // Lógica do Filtro
         if ($request->filled('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
         }
-
         $produtos = $query->get();
-
-        // Usado para mostrar o nome da categoria no título quando filtrado
         $categoriaFiltro = $request->filled('categoria_id') ? Categoria::find($request->categoria_id) : null;
-
         return view('produtos.index', compact('produtos', 'categoriaFiltro'));
     }
 
@@ -42,12 +37,16 @@ class ProdutoController extends Controller
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
+            'codigo_barras' => 'nullable|string|max:255|unique:produtos',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
-        $produto = Produto::create($request->all());
-
-        // A LÓGICA CORRETA DE REDIRECIONAMENTO
-        return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Produto base criado! Agora adicione as variações.');
+        $dados = $request->all();
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('product_photos', 'public');
+            $dados['foto_path'] = $path;
+        }
+        $produto = Produto::create($dados);
+        return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Produto base criado! Agora, defina os atributos e adicione as variações.');
     }
 
     public function show(Produto $produto)
@@ -58,13 +57,12 @@ class ProdutoController extends Controller
 
     public function edit(Produto $produto)
     {
-        $produto->load('variations.attributeValues.atributo');
+        $produto->load('variations.attributeValues.atributo', 'attributes');
         $categorias = Categoria::orderBy('nome')->get();
         $fornecedores = Fornecedor::orderBy('nome')->get();
         $marcas = Marca::orderBy('nome')->get();
-        $atributos = Atributo::with('valorAtributos')->get();
-        
-        return view('produtos.edit', compact('produto', 'categorias', 'fornecedores', 'marcas', 'atributos'));
+        $todosAtributos = Atributo::with('valorAtributos')->get();
+        return view('produtos.edit', compact('produto', 'categorias', 'fornecedores', 'marcas', 'todosAtributos'));
     }
 
     public function update(Request $request, Produto $produto)
@@ -73,14 +71,44 @@ class ProdutoController extends Controller
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
+            'codigo_barras' => 'nullable|string|max:255|unique:produtos,codigo_barras,' . $produto->id,
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
-        $produto->update($request->all());
-
+        $dados = $request->all();
+        if ($request->hasFile('foto')) {
+            if ($produto->foto_path) {
+                Storage::disk('public')->delete($produto->foto_path);
+            }
+            $path = $request->file('foto')->store('product_photos', 'public');
+            $dados['foto_path'] = $path;
+        }
+        $produto->update($dados);
         if ($request->input('action') === 'save_and_back') {
             return redirect()->route('produtos.index')->with('sucesso', 'Produto atualizado com sucesso!');
         }
         return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Produto base atualizado com sucesso!');
+    }
+
+    /**
+     * NOVO MÉTODO para sincronizar os atributos de um produto.
+     */
+    /**
+     * Sincroniza os atributos de um produto.
+     */
+    public function syncAttributes(Request $request, Produto $produto)
+    {
+        $request->validate([
+            'attributes' => 'nullable|array', // Alterado para nullable
+            'attributes.*' => 'exists:atributos,id',
+        ]);
+
+        // A CORREÇÃO ESTÁ AQUI:
+        // Pega apenas o array 'attributes' do request. Se não vier nenhum, usa um array vazio.
+        $attributes = $request->input('attributes', []);
+
+        $produto->attributes()->sync($attributes);
+
+        return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Atributos do produto atualizados!');
     }
 
     public function destroy(Produto $produto)

@@ -24,4 +24,12 @@ class Atributo extends Model
     {
         return $this->hasMany(ValorAtributo::class);
     }
+
+    /**
+     * Um Atributo pode pertencer a MUITOS Produtos.
+     */
+    public function products()
+    {
+        return $this->belongsToMany(Produto::class, 'attribute_product', 'atributo_id', 'produto_id');
+    }
 }

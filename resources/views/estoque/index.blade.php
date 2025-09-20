@@ -11,22 +11,32 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100" x-data="{ tipo: '{{ old('tipo', 'entrada') }}' }">
                     <h3 class="text-lg font-medium mb-4">Registrar Nova Movimentação</h3>
                     
-                    @if ($errors->any())
-                        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 rounded">
-                            <strong class="font-bold">Ocorreu um erro!</strong>
-                            <ul class="mt-2 list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                    @if ($errors->any() || session('sucesso'))
+                        <div class="mb-4">
+                            @if ($errors->any())
+                                <div class="p-4 bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 rounded">
+                                    <strong class="font-bold">Ocorreu um erro!</strong>
+                                    <ul class="mt-2 list-disc list-inside text-sm">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            
+                            @if(session('sucesso'))
+                                <x-alert :message="session('sucesso')" />
+                            @endif
+                            
                         </div>
                     @endif
-
-                    @if(session('sucesso'))
-                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-800 border border-green-400 text-green-700 dark:text-green-300 rounded" role="alert">
-                            {{ session('sucesso') }}
-                        </div>
-                    @endif
+                    
+                    <div class="mb-4">
+                        <label for="barcode_search" class="block font-medium text-sm">Scanear Código de Barras (SKU)</label>
+                        <input id="barcode_search" type="text" placeholder="Posicione o cursor aqui e scaneie o código" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:bg-gray-900 focus:border-indigo-500 focus:ring-indigo-500 transition">
+                        <div id="scan_success" class="mt-2 text-sm text-green-600 font-bold" style="display: none;">Produto Encontrado!</div>
+                        <div id="scan_error" class="mt-2 text-sm text-red-600 font-bold" style="display: none;">Produto não encontrado!</div>
+                    </div>
 
                     <form method="POST" action="{{ route('estoque.store') }}" class="space-y-4">
                         @csrf
@@ -36,7 +46,7 @@
                                 <select id="product_variation_id" name="product_variation_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-500" required>
                                     <option value="">Selecione um produto</option>
                                     @foreach ($variations as $variation)
-                                        <option value="{{ $variation->id }}" @if(old('product_variation_id') == $variation->id) selected @endif>
+                                        <option value="{{ $variation->id }}" data-sku="{{ $variation->sku }}" @if(old('product_variation_id') == $variation->id) selected @endif>
                                             {{ $variation->produto->nome }} - @foreach($variation->attributeValues as $value){{$value->valor}}@if(!$loop->last), @endif @endforeach (SKU: {{ $variation->sku }})
                                         </option>
                                     @endforeach
@@ -124,4 +134,84 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const barcodeInput = document.getElementById('barcode_search');
+            const variationSelect = document.getElementById('product_variation_id');
+            const quantityInput = document.getElementById('quantidade');
+            const successAlert = document.getElementById('scan_success');
+            const errorAlert = document.getElementById('scan_error');
+
+            let timeoutId;
+
+            function showFeedback(type, message) {
+                // Limpa qualquer timeout anterior
+                clearTimeout(timeoutId);
+
+                // Esconde ambas as mensagens
+                successAlert.style.display = 'none';
+                errorAlert.style.display = 'none';
+                
+                if (type === 'success') {
+                    successAlert.innerText = message;
+                    successAlert.style.display = 'block';
+                    barcodeInput.classList.remove('border-red-500');
+                    barcodeInput.classList.add('border-green-500');
+                } else {
+                    errorAlert.innerText = message;
+                    errorAlert.style.display = 'block';
+                    barcodeInput.classList.remove('border-green-500');
+                    barcodeInput.classList.add('border-red-500');
+                }
+
+                // Agenda para esconder a mensagem após 3 segundos
+                timeoutId = setTimeout(() => {
+                    successAlert.style.display = 'none';
+                    errorAlert.style.display = 'none';
+                    barcodeInput.classList.remove('border-green-500', 'border-red-500');
+                }, 3000);
+            }
+
+            barcodeInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+
+                    const scannedSku = barcodeInput.value.trim();
+                    if (!scannedSku) return;
+
+                    let found = false;
+
+                    for (let i = 0; i < variationSelect.options.length; i++) {
+                        const option = variationSelect.options[i];
+                        if (option.dataset.sku === scannedSku) {
+                            variationSelect.value = option.value;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        showFeedback('success', 'Produto Encontrado!');
+                        barcodeInput.value = '';
+                        quantityInput.focus();
+                        quantityInput.select();
+                    } else {
+                        showFeedback('error', 'Produto não encontrado!');
+                        variationSelect.value = ''; // Limpa a seleção anterior
+                    }
+                }
+            });
+            
+            barcodeInput.addEventListener('input', function() {
+                // Limpa feedback visual e alertas ao começar a digitar
+                barcodeInput.classList.remove('border-green-500', 'border-red-500');
+                successAlert.style.display = 'none';
+                errorAlert.style.display = 'none';
+                clearTimeout(timeoutId);
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

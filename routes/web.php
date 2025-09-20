@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductVariationController;
 use App\Http\Controllers\MovimentacaoEstoqueController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ClienteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -82,6 +83,11 @@ Route::middleware('auth')->group(function () {
 
     // Rota para sincronizar atributos de um produto específico
     Route::put('produtos/{produto}/attributes', [ProdutoController::class, 'syncAttributes'])->name('produtos.attributes.sync');
+
+    // Rota para o CRUD de Clientes com middleware de autenticação
+    Route::resource('clientes', ClienteController::class)
+    ->parameters(['clientes' => 'cliente'])
+    ->middleware('auth');
 });
 
 require __DIR__.'/auth.php';

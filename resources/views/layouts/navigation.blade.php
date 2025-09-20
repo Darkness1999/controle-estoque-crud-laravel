@@ -34,6 +34,14 @@
                         {{ __('Relatórios') }}
                     </x-nav-link>
                     
+                    <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                        {{ __('Clientes') }}
+                    </x-nav-link>
+
+                    <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                        {{ __('Clientes') }}
+                    </x-responsive-nav-link>
+
                     @can('access-admin-area')
                     <!-- Como funciona: A diretiva @ can('access-admin-area') pergunta ao nosso Gate: "O utilizador atual tem permissão?". Se a resposta for true, o HTML dentro do bloco é renderizado. Se for false, ele é completamente omitido. -->
                         <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">

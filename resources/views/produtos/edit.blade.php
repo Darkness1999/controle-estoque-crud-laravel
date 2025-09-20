@@ -239,6 +239,11 @@
         <div x-show="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="isModalOpen = false" style="display: none;">
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-2xl" @click.away="isModalOpen = false">
                 <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Editar Variação</h3>
+                
+                @if(session('sucesso'))
+                        <x-alert :message="session('sucesso')" />
+                @endif
+                
                 <form :action="`/variations/${currentVariation.id}`" method="POST">
                     @csrf
                     @method('PUT')

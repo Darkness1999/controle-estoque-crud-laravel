@@ -12,6 +12,11 @@
                     <div class="mb-4">
                         <a href="{{ route('valores.index', $atributo->id) }}" class="text-sm text-indigo-600 hover:text-indigo-900"> &larr; Voltar para a Lista de Valores</a>
                     </div>
+
+                    @if(session('sucesso'))
+                        <x-alert :message="session('sucesso')" />
+                    @endif
+                    {{-- Formulário de Criação --}}
                     <form method="POST" action="{{ route('valores.store', $atributo->id) }}">
                         @csrf
                         <div>

@@ -18,11 +18,8 @@
 
                     <p>Lista de Fornecedores:</p>
 
-                    @if (session('sucesso'))
-                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-800 border border-green-400 text-green-700 dark:text-green-300 rounded" role="alert">
-                            <p class="font-bold">Sucesso!</p>
-                            <p>{{ session('sucesso') }}</p>
-                        </div>
+                    @if(session('sucesso'))
+                        <x-alert :message="session('sucesso')" />
                     @endif
 
                     @forelse ($fornecedores as $fornecedor)

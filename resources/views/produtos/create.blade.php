@@ -10,6 +10,11 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                    @if(session('sucesso'))
+                        <x-alert :message="session('sucesso')" />
+                    @endif
+
+                    {{-- Formulário de Criação --}}
                     <form method="POST" action="{{ route('produtos.store') }}" class="space-y-4" enctype="multipart/form-data">
                         @csrf
 

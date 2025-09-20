@@ -13,9 +13,11 @@
                         <p class="font-xl">Atributos Cadastrados (Cor, Tamanho, etc.)</p>
                         <a href="{{ route('atributos.create') }}" class="px-4 py-2 bg-indigo-600 rounded-md font-semibold text-xs text-white uppercase">Adicionar Atributo</a>
                     </div>
-                    @if (session('sucesso'))
-                        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">{{ session('sucesso') }}</div>
+
+                    @if(session('sucesso'))
+                        <x-alert :message="session('sucesso')" />
                     @endif
+
                     <table class="min-w-full">
                         <thead class="border-b">
                             <tr>

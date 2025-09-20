@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MovimentacaoEstoque extends Model
 {
     use HasFactory;
-
-    protected $table = 'movimentacao_estoques'; // Especifica o nome da tabela manualmente
-
+    protected $table = 'movimentacao_estoques';
     protected $fillable = [
         'product_variation_id',
         'user_id',
@@ -18,17 +16,13 @@ class MovimentacaoEstoque extends Model
         'quantidade',
         'motivo',
         'observacao',
+        'fornecedor_id',
+        'cliente_id',
     ];
 
-    // Uma movimentação pertence a uma Variação de Produto
-    public function productVariation()
-    {
-        return $this->belongsTo(ProductVariation::class);
-    }
+    public function productVariation() { return $this->belongsTo(ProductVariation::class); }
+    public function user() { return $this->belongsTo(User::class); }
 
-    // Uma movimentação foi feita por um Usuário
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    public function fornecedor() { return $this->belongsTo(Fornecedor::class); }
+    public function cliente() { return $this->belongsTo(Cliente::class); }
 }

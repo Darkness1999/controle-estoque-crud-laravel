@@ -21,4 +21,9 @@ class Cliente extends Model
         'telefone',
         'endereco',
     ];
+
+    public function movimentacoes() 
+    { 
+        return $this->hasMany(MovimentacaoEstoque::class); 
+    }
 }

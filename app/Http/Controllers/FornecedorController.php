@@ -25,7 +25,7 @@ class FornecedorController extends Controller
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            'cnpj' => 'nullable|string|max:18|unique:fornecedors',
+            'cnpj' => 'nullable|string|max:18|unique:fornecedores',
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',
@@ -55,7 +55,7 @@ class FornecedorController extends Controller
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            'cnpj' => 'nullable|string|max:18|unique:fornecedors,cnpj,' . $fornecedor->id,
+            'cnpj' => 'nullable|string|max:18|unique:fornecedores,cnpj,' . $fornecedor->id,
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',

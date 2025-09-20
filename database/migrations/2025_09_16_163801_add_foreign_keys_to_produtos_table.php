@@ -13,7 +13,7 @@ public function up(): void
         // Adiciona as restrições de chave estrangeira
         $table->foreign('categoria_id')->references('id')->on('categorias');
         $table->foreign('marca_id')->references('id')->on('marcas');
-        $table->foreign('fornecedor_id')->references('id')->on('fornecedors');
+        $table->foreign('fornecedor_id')->references('id')->on('fornecedores');
     });
 }
 

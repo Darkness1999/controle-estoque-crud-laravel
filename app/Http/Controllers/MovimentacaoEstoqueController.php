@@ -6,9 +6,11 @@ use App\Models\MovimentacaoEstoque;
 use App\Models\ProductVariation;
 use App\Models\Fornecedor;
 use App\Models\Cliente;
+use App\Models\LoteEstoque;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class MovimentacaoEstoqueController extends Controller
 {
@@ -16,7 +18,6 @@ class MovimentacaoEstoqueController extends Controller
     {
         $variations = ProductVariation::with('produto', 'attributeValues.atributo')->get();
         $movimentacoes = MovimentacaoEstoque::with('productVariation.produto', 'user', 'fornecedor', 'cliente')->latest()->take(10)->get();
-        
         $fornecedores = Fornecedor::orderBy('nome')->get();
         $clientes = Cliente::orderBy('nome')->get();
 
@@ -30,34 +31,84 @@ class MovimentacaoEstoqueController extends Controller
             'tipo' => 'required|in:entrada,saida',
             'quantidade' => 'required|integer|min:1',
             'motivo' => 'nullable|string|max:255',
-            'fornecedor_id' => 'required_if:tipo,entrada|exists:fornecedores,id',
-            'cliente_id' => 'required_if:tipo,saida|exists:clientes,id',
+            'fornecedor_id' => 'nullable|exists:fornecedores,id',
+            'cliente_id' => 'nullable|exists:clientes,id',
+            'lote' => 'required_if:tipo,entrada|string|max:255',
+            'data_validade' => 'nullable|date',
         ]);
 
         $variation = ProductVariation::findOrFail($request->product_variation_id);
 
-        if ($request->tipo === 'saida' && $request->quantidade > $variation->estoque_atual) {
-            return back()->withErrors(['quantidade' => 'A quantidade de saída não pode ser maior que o estoque atual.']);
+        try {
+            DB::transaction(function () use ($request, $variation) {
+                if ($request->tipo === 'entrada') {
+                    $this->handleEntrada($request, $variation);
+                } else {
+                    $this->handleSaida($request, $variation);
+                }
+            });
+        } catch (Exception $e) {
+            return back()->withErrors(['operacao' => $e->getMessage()])->withInput();
         }
 
-        DB::transaction(function () use ($request, $variation) {
+        return redirect()->route('estoque.movimentar')->with('sucesso', 'Movimentação de estoque registrada com sucesso!');
+    }
+
+    private function handleEntrada(Request $request, ProductVariation $variation)
+    {
+        // Cria um novo lote para esta entrada
+        $lote = $variation->lotesEstoque()->create([
+            'lote' => $request->lote,
+            'data_validade' => $request->data_validade,
+            'quantidade_atual' => $request->quantidade,
+        ]);
+
+        // Cria o registro da movimentação
+        MovimentacaoEstoque::create([
+            'product_variation_id' => $variation->id,
+            'lote_estoque_id' => $lote->id,
+            'user_id' => Auth::id(),
+            'tipo' => 'entrada',
+            'quantidade' => $request->quantidade,
+            'motivo' => $request->motivo,
+            'fornecedor_id' => $request->fornecedor_id,
+        ]);
+    }
+
+    private function handleSaida(Request $request, ProductVariation $variation)
+    {
+        $quantidadeSaida = $request->quantidade;
+
+        if ($quantidadeSaida > $variation->estoque_atual) {
+            throw new Exception('A quantidade de saída não pode ser maior que o estoque atual.');
+        }
+
+        // Lógica FEFO: busca os lotes ordenados pela data de validade mais próxima
+        $lotes = $variation->lotesEstoque()
+                          ->where('quantidade_atual', '>', 0)
+                          ->orderBy('data_validade', 'asc')
+                          ->get();
+
+        foreach ($lotes as $lote) {
+            if ($quantidadeSaida <= 0) break;
+
+            $removerDesteLote = min($quantidadeSaida, $lote->quantidade_atual);
+
+            // Atualiza a quantidade do lote
+            $lote->decrement('quantidade_atual', $removerDesteLote);
+
+            // Cria um registro de movimentação para esta baixa de lote específico
             MovimentacaoEstoque::create([
-                'product_variation_id' => $request->product_variation_id,
+                'product_variation_id' => $variation->id,
+                'lote_estoque_id' => $lote->id,
                 'user_id' => Auth::id(),
-                'tipo' => $request->tipo,
-                'quantidade' => $request->quantidade,
+                'tipo' => 'saida',
+                'quantidade' => $removerDesteLote,
                 'motivo' => $request->motivo,
-                'fornecedor_id' => $request->tipo === 'entrada' ? $request->fornecedor_id : null,
-                'cliente_id' => $request->tipo === 'saida' ? $request->cliente_id : null,
+                'cliente_id' => $request->cliente_id,
             ]);
 
-            if ($request->tipo === 'entrada') {
-                $variation->increment('estoque_atual', $request->quantidade);
-            } else {
-                $variation->decrement('estoque_atual', $request->quantidade);
-            }
-        });
-
-        return redirect()->route('estoque.movimentar')->with('sucesso', 'Movimentação de estoque registrada com sucesso!');
+            $quantidadeSaida -= $removerDesteLote;
+        }
     }
 }

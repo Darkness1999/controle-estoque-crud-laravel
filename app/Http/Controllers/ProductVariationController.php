@@ -57,4 +57,13 @@ class ProductVariationController extends Controller
         $variation->delete();
         return redirect()->route('produtos.edit', $produto_id)->with('sucesso', 'Variação apagada com sucesso!');
     }
+
+        /**
+         * Mostra uma view otimizada para impressão da etiqueta de uma variação.
+         */
+        public function printLabel(ProductVariation $variation)
+        {
+            // Apenas precisamos de passar a variação para a view, o resto é feito no frontend
+            return view('variations.label', compact('variation'));
+        }
 }

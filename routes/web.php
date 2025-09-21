@@ -88,6 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('clientes', ClienteController::class)
     ->parameters(['clientes' => 'cliente'])
     ->middleware('auth');
+
+    // Rota para imprimir etiquetas de variações de produtos
+    Route::get('variations/{variation}/label', [ProductVariationController::class, 'printLabel'])->name('variations.label');
 });
 
 require __DIR__.'/auth.php';

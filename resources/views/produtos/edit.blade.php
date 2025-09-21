@@ -65,6 +65,7 @@
                                                 <td class="px-4 py-2 text-sm">{{ $variation->estoque_atual }}</td>
                                                 <td class="px-4 py-2 text-sm">{{ $variation->estoque_minimo }}</td>
                                                 <td class="px-4 py-2 flex items-center space-x-4">
+                                                    <a href="{{ route('variations.label', $variation->id) }}" target="_blank" class="text-blue-600 hover:text-blue-900 text-sm font-semibold">Etiqueta</a>
                                                     <button @click="isModalOpen = true; currentVariation = {{ $variation->toJson() }}" class="text-yellow-600 hover:text-yellow-900 text-sm font-semibold">Editar</button>
                                                     <form method="POST" action="{{ route('variations.destroy', $variation->id) }}" onsubmit="return confirm('Tem certeza?');">
                                                         @csrf

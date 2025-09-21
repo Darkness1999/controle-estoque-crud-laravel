@@ -18,28 +18,30 @@
 </head>
 <body class="antialiased">
 
-    <div class="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-indigo-900">
+    <div class="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-700 via-indigo-800 to-purple-900">
         
-        <!-- brilho de fundo -->
+        <!-- Overlay para contraste -->
         <div class="absolute inset-0 bg-black/40"></div>
 
-        <!-- Conteúdo -->
+        <!-- Conteúdo central -->
         <div class="relative text-center text-white fade-in px-6 max-w-3xl">
             
-            <!-- Ícone -->
-            <div class="mx-auto mb-10 w-24 h-24 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm shadow-xl text-5xl">
-                📦
+            <!-- Ícone SVG -->
+            <div class="mx-auto mb-10 w-28 h-28 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm shadow-2xl text-indigo-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5l9-4.5 9 4.5M3 7.5l9 4.5 9-4.5M3 7.5v9l9 4.5 9-4.5v-9" />
+                </svg>
             </div>
 
-            <!-- Nome + Slogan -->
+            <!-- Nome + Subtítulo -->
             <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">
                 Controle de Estoque
             </h1>
             <p class="mt-4 text-xl md:text-2xl text-indigo-100 font-light">
-                SISTEMA COMPLETO E MODERNO PARA GESTÃO DE PRODUTOS
+                Controle completo para empresas de qualquer porte.
             </p>
 
-            <!-- Ações -->
+            <!-- Botões de Ação -->
             @if (Route::has('login'))
                 <div class="mt-10 flex flex-col sm:flex-row gap-6 justify-center">
                     @auth
@@ -63,7 +65,7 @@
             @endif
 
             <!-- Rodapé -->
-            <footer class="mt-16 text-sm text-indigo-200">
+            <footer class="mt-16 text-sm text-indigo-20">
                 Desenvolvido com Laravel v{{ Illuminate\Foundation\Application::VERSION }}
                 (PHP v{{ PHP_VERSION }})
             </footer>

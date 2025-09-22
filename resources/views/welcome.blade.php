@@ -38,7 +38,7 @@
                 Controle de Estoque
             </h1>
             <p class="mt-4 text-xl md:text-2xl text-indigo-100 font-light">
-                Controle completo para empresas de qualquer porte.
+                Gestão de estoque inteligente.
             </p>
 
             <!-- Botões de Ação -->

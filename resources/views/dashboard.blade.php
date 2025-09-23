@@ -66,7 +66,7 @@
                         @forelse ($variacoesEstoqueBaixo as $variation)
                             <li class="py-3">
                                 <a href="{{ route('produtos.edit', $variation->produto_id) }}" class="hover:underline">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $variation->produto->nome }}</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $variation->produto?->nome ?? 'Produto Removido' }}</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
                                         @foreach($variation->attributeValues as $value) {{ $value->valor }} @endforeach
                                         - <span class="font-bold text-red-500">Estoque: {{ $variation->estoque_atual }}</span>
@@ -86,7 +86,7 @@
                         @forelse ($produtosParados as $variation)
                             <li class="py-3">
                                 <a href="{{ route('produtos.edit', $variation->produto_id) }}" class="hover:underline">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $variation->produto->nome }}</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $variation->produto?->nome ?? 'Produto Removido' }}</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
                                         @foreach($variation->attributeValues as $value) {{ $value->valor }} @endforeach
                                         - <span class="font-bold">Estoque: {{ $variation->estoque_atual }}</span>
@@ -109,10 +109,10 @@
                                     {{ $mov->tipo === 'entrada' ? 'de entrada em' : 'de saída em' }}
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $mov->productVariation->produto->nome }} ({{ $mov->productVariation->sku }})
+                                    {{ $mov->productVariation?->produto?->nome ?? 'Produto Removido' }} ({{ $mov->productVariation?->sku ?? 'N/A' }})
                                 </p>
                                 <p class="text-xs text-gray-400">
-                                    {{ $mov->created_at->diffForHumans() }} por {{ $mov->user->name }}
+                                    {{ $mov->created_at->diffForHumans() }} por {{ $mov->user?->name ?? 'Utilizador Removido' }}
                                 </p>
                             </li>
                         @empty
@@ -121,19 +121,16 @@
                     </ul>
                 </div>
             </div>
-
         </div>
     </div>
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Prepara os dados para o gráfico de categorias
         const categoriasData = @json($categoriasPorValor);
         const categoriaLabels = categoriasData.map(item => item.nome);
         const categoriaValores = categoriasData.map(item => item.valor_total);
 
-        // Gráfico de Linha: Saídas no Período
         const saidasCtx = document.getElementById('saidasChart');
         if (saidasCtx) {
             new Chart(saidasCtx, {
@@ -153,7 +150,6 @@
             });
         }
 
-        // Gráfico de Rosca: Categorias por Valor
         const categoriasCtx = document.getElementById('categoriasChart');
         if (categoriasCtx) {
             new Chart(categoriasCtx, {
@@ -174,10 +170,8 @@
                 options: {
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
-                            const chartElement = elements[0];
-                            const index = chartElement.index;
-                            const categoriaId = categoriasData[index].id;
-                            
+                            const index = elements[0].index;
+                            const categoriaId = categoriasData[index]?.id;
                             if(categoriaId) {
                                window.location.href = `{{ route('produtos.index') }}?categoria_id=${categoriaId}`;
                             }

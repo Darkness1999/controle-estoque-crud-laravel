@@ -8,9 +8,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('sucesso'))
-                <div class="p-4 bg-green-100 dark:bg-green-800 border border-green-400 text-green-700 dark:text-green-300 rounded" role="alert">
-                    {{ session('sucesso') }}
-                </div>
+                <x-alert :message="session('sucesso')" />
             @endif
         </div>
     </div>
@@ -44,12 +42,12 @@
                                 <table class="min-w-full">
                                     <thead class="border-b dark:border-gray-700">
                                         <tr>
-                                            <th class="px-4 py-2 text-left text-sm">Atributos</th>
-                                            <th class="px-4 py-2 text-left text-sm">SKU</th>
-                                            <th class="px-4 py-2 text-left text-sm">Preço Venda</th>
-                                            <th class="px-4 py-2 text-left text-sm">Estoque Atual</th>
-                                            <th class="px-4 py-2 text-left text-sm">Estoque Mínimo</th>
-                                            <th class="px-4 py-2 text-left text-sm">Ações</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Atributos</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">SKU</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Preço Venda</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Estoque Atual</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Estoque Mínimo</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -114,8 +112,8 @@
                                             <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
                                         </div>
                                         <div>
-                                            <label for="estoque_atual" class="block font-medium text-sm">Estoque Inicial</label>
-                                            <input id="estoque_atual" name="estoque_atual" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
+                                            <label for="estoque_inicial" class="block font-medium text-sm">Estoque Inicial</label>
+                                            <input id="estoque_inicial" name="estoque_inicial" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                         </div>
                                         <div>
                                             <label for="estoque_minimo" class="block font-medium text-sm">Estoque Mínimo</label>
@@ -240,11 +238,6 @@
         <div x-show="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="isModalOpen = false" style="display: none;">
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-2xl" @click.away="isModalOpen = false">
                 <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Editar Variação</h3>
-                
-                @if(session('sucesso'))
-                        <x-alert :message="session('sucesso')" />
-                @endif
-                
                 <form :action="`/variations/${currentVariation.id}`" method="POST">
                     @csrf
                     @method('PUT')
@@ -263,8 +256,9 @@
                                 <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </div>
                             <div>
-                                <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</bal>
-                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</label>
+                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" disabled>
+                                <p class="text-xs text-gray-500 mt-1">O stock só pode ser alterado na tela de "Movimentar Estoque".</p>
                             </div>
                             <div>
                                 <label for="edit_estoque_minimo" class="block text-sm font-medium">Estoque Mínimo</label>

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'produto_id',
@@ -47,5 +48,14 @@ class ProductVariation extends Model
     public function getEstoqueAtualAttribute()
     {
         return $this->lotesEstoque()->sum('quantidade_atual');
+    }
+
+    /**
+     * UMA VARIAÇÃO PODE TER MUITAS MOVIMENTAÇÕES.
+     * Este é o relacionamento que faltava.
+     */
+    public function movimentacoes()
+    {
+        return $this->hasMany(MovimentacaoEstoque::class);
     }
 }

@@ -32,6 +32,7 @@
                                     <td class="px-6 py-4">{{ $cliente->cpf_cnpj }}</td>
                                     <td class="px-6 py-4">{{ $cliente->email }}</td>
                                     <td class="px-6 py-4 flex space-x-4">
+                                        <a href="{{ route('clientes.show', $cliente->id) }}" class="text-blue-600 hover:text-blue-900 font-semibold">Detalhes</a>
                                         <a href="{{ route('clientes.edit', $cliente->id) }}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
                                         <form method="POST" action="{{ route('clientes.destroy', $cliente->id) }}" onsubmit="return confirm('Tem certeza?');">
                                             @csrf

@@ -9,6 +9,7 @@ use App\Models\Marca;
 use App\Models\Atributo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProdutoController extends Controller
 {
@@ -33,19 +34,23 @@ class ProdutoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
+            'fornecedor_id' => 'nullable|exists:fornecedores,id',
             'codigo_barras' => 'nullable|string|max:255|unique:produtos',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $dados = $request->all();
+
         if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('product_photos', 'public');
-            $dados['foto_path'] = $path;
+            $validatedData['foto_path'] = $path;
         }
-        $produto = Produto::create($dados);
+
+        $produto = Produto::create($validatedData);
+
         return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Produto base criado! Agora, defina os atributos e adicione as variações.');
     }
 
@@ -67,45 +72,40 @@ class ProdutoController extends Controller
 
     public function update(Request $request, Produto $produto)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
+            'fornecedor_id' => 'nullable|exists:fornecedores,id',
             'codigo_barras' => 'nullable|string|max:255|unique:produtos,codigo_barras,' . $produto->id,
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
-        $dados = $request->all();
+
         if ($request->hasFile('foto')) {
             if ($produto->foto_path) {
                 Storage::disk('public')->delete($produto->foto_path);
             }
             $path = $request->file('foto')->store('product_photos', 'public');
-            $dados['foto_path'] = $path;
+            $validatedData['foto_path'] = $path;
         }
-        $produto->update($dados);
+
+        $produto->update($validatedData);
+
         if ($request->input('action') === 'save_and_back') {
             return redirect()->route('produtos.index')->with('sucesso', 'Produto atualizado com sucesso!');
         }
         return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Produto base atualizado com sucesso!');
     }
 
-    /**
-     * NOVO MÉTODO para sincronizar os atributos de um produto.
-     */
-    /**
-     * Sincroniza os atributos de um produto.
-     */
     public function syncAttributes(Request $request, Produto $produto)
     {
         $request->validate([
-            'attributes' => 'nullable|array', // Alterado para nullable
+            'attributes' => 'nullable|array',
             'attributes.*' => 'exists:atributos,id',
         ]);
-
-        // A CORREÇÃO ESTÁ AQUI:
-        // Pega apenas o array 'attributes' do request. Se não vier nenhum, usa um array vazio.
+        
         $attributes = $request->input('attributes', []);
-
         $produto->attributes()->sync($attributes);
 
         return redirect()->route('produtos.edit', $produto->id)->with('sucesso', 'Atributos do produto atualizados!');
@@ -113,6 +113,9 @@ class ProdutoController extends Controller
 
     public function destroy(Produto $produto)
     {
+        if ($produto->foto_path) {
+            Storage::disk('public')->delete($produto->foto_path);
+        }
         $produto->delete();
         return redirect()->route('produtos.index')->with('sucesso', 'Produto apagado com sucesso!');
     }

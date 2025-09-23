@@ -35,7 +35,14 @@ class ClienteController extends Controller
 
     public function show(Cliente $cliente)
     {
-        return view('clientes.show', compact('cliente'));
+        // Carrega as movimentações do cliente, ordenadas da mais recente para a mais antiga
+        // e já inclui os detalhes da variação do produto para cada movimento.
+        $movimentacoes = $cliente->movimentacoes()
+                                ->with('productVariation.produto', 'productVariation.attributeValues.atributo')
+                                ->latest()
+                                ->paginate(10); // Paginamos para o caso de o cliente ter muitos pedidos
+
+        return view('clientes.show', compact('cliente', 'movimentacoes'));
     }
 
     public function edit(Cliente $cliente)

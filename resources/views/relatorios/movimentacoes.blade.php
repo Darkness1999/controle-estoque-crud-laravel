@@ -9,11 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-
-                    @if(session('sucesso'))
-                        <x-alert :message="session('sucesso')" />
-                    @endif
-                    
                     <h3 class="text-lg font-medium mb-4">Filtrar Relatório</h3>
                     <form method="GET" action="{{ route('relatorios.movimentacoes') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -23,7 +18,8 @@
                                     <option value="">Todos os Produtos</option>
                                     @foreach ($variations as $variation)
                                         <option value="{{ $variation->id }}" {{ request('product_variation_id') == $variation->id ? 'selected' : '' }}>
-                                            {{ $variation->produto->nome }} ({{ $variation->sku }})
+                                            {{-- CORREÇÃO APLICADA AQUI TAMBÉM --}}
+                                            {{ $variation->produto?->nome }} ({{ $variation->sku }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -72,8 +68,8 @@
                                     <tr class="border-b dark:border-gray-700">
                                         <td class="px-4 py-2 text-sm">{{ $mov->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="px-4 py-2 text-sm">
-                                            <p class="font-semibold">{{ $mov->productVariation->produto->nome }}</p>
-                                            <p class="text-xs text-gray-600">SKU: {{ $mov->productVariation->sku }}</p>
+                                            <p class="font-semibold">{{ $mov->productVariation?->produto?->nome ?? 'Produto Removido' }}</p>
+                                            <p class="text-xs text-gray-600">SKU: {{ $mov->productVariation?->sku ?? 'N/A' }}</p>
                                         </td>
                                         <td class="px-4 py-2 text-sm">
                                             <span class="font-semibold @if($mov->tipo === 'entrada') text-green-600 @else text-red-600 @endif">
@@ -81,8 +77,8 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-2 text-sm font-bold">{{ $mov->quantidade }}</td>
-                                        <td class="px-4 py-2 text-sm">{{ $mov->motivo }}</td>
-                                        <td class="px-4 py-2 text-sm">{{ $mov->user->name }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ $mov->motivo ?? 'N/A' }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ $mov->user?->name ?? 'Utilizador Removido' }}</td>
                                     </tr>
                                 @empty
                                     <tr><td colspan="6" class="text-center py-4">Nenhuma movimentação encontrada para os filtros selecionados.</td></tr>
@@ -95,7 +91,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

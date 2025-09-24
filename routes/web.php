@@ -20,8 +20,9 @@ use App\Http\Controllers\ClienteController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-| Rota pública de boas-vindas
 */
+
+// Rota pública de boas-vindas
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
@@ -29,37 +30,33 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-/*
-|--------------------------------------------------------------------------
-| Rotas que Exigem Autenticação
-|--------------------------------------------------------------------------
-| Todas as rotas dentro deste grupo só podem ser acedidas por utilizadores logados.
-*/
+// Rotas que Exigem Autenticação
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // Rota do Dashboard
+    // Dashboards
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/vendas/dashboard', function () {
+        return view('vendas.dashboard');
+    })->name('vendas.dashboard');
 
-    // Rotas do Perfil do Utilizador
+    // Perfil do Utilizador
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // CRUDs de Dados Mestres
+    // CRUDs
     Route::resource('categorias', CategoriaController::class);
     Route::resource('marcas', MarcaController::class)->parameters(['marcas' => 'marca']);
     Route::resource('fornecedores', FornecedorController::class)->parameters(['fornecedores' => 'fornecedor']);
     Route::resource('clientes', ClienteController::class)->parameters(['clientes' => 'cliente']);
-
-    // CRUDs de Atributos e Valores
     Route::resource('atributos', AtributoController::class)->parameters(['atributos' => 'atributo']);
+    Route::resource('produtos', ProdutoController::class)->parameters(['produtos' => 'produto']);
+
+    // Rotas de Atributos e Variações
     Route::get('atributos/{atributo}/valores', [ValorAtributoController::class, 'index'])->name('valores.index');
     Route::get('atributos/{atributo}/valores/create', [ValorAtributoController::class, 'create'])->name('valores.create');
     Route::post('atributos/{atributo}/valores', [ValorAtributoController::class, 'store'])->name('valores.store');
     Route::delete('valores/{valorAtributo}', [ValorAtributoController::class, 'destroy'])->name('valores.destroy');
-
-    // CRUD de Produtos e Variações
-    Route::resource('produtos', ProdutoController::class)->parameters(['produtos' => 'produto']);
     Route::put('produtos/{produto}/attributes', [ProdutoController::class, 'syncAttributes'])->name('produtos.attributes.sync');
     Route::post('produtos/{produto}/variations', [ProductVariationController::class, 'store'])->name('variations.store');
     Route::get('variations/{variation}/edit', [ProductVariationController::class, 'edit'])->name('variations.edit');
@@ -72,22 +69,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/movimentar-estoque', [MovimentacaoEstoqueController::class, 'store'])->name('estoque.store');
     Route::get('/relatorios/movimentacoes', [RelatorioController::class, 'movimentacoes'])->name('relatorios.movimentacoes');
 
-    // Rotas de Administração (Protegidas por Gate)
+    // Rotas de Administração
     Route::middleware('can:access-admin-area')->group(function () {
         Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
         Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
     });
-
-    // Rota do Dashboard de Vendas
-    Route::get('/vendas/dashboard', function () {
-        return view('vendas.dashboard');
-    })->name('vendas.dashboard');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Rotas de Autenticação
-|--------------------------------------------------------------------------
-| Esta linha carrega as rotas de login, registo, logout, etc.
-*/
+// Rotas de Autenticação
 require __DIR__.'/auth.php';

@@ -7,6 +7,7 @@ use App\Models\ProductVariation;
 use App\Models\Fornecedor;
 use App\Models\Cliente;
 use App\Models\LoteEstoque;
+use App\Services\EstoqueService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,14 @@ use Exception;
 
 class MovimentacaoEstoqueController extends Controller
 {
+     protected $estoqueService;
+
+    // 2. Injetar o serviço no controller
+    public function __construct(EstoqueService $estoqueService)
+    {
+        $this->estoqueService = $estoqueService;
+    }
+
     public function index()
     {
         $variations = ProductVariation::with('produto', 'attributeValues.atributo')->get();
@@ -26,27 +35,20 @@ class MovimentacaoEstoqueController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'product_variation_id' => 'required|exists:product_variations,id',
             'tipo' => 'required|in:entrada,saida',
             'quantidade' => 'required|integer|min:1',
             'motivo' => 'nullable|string|max:255',
-            'fornecedor_id' => 'nullable|exists:fornecedores,id',
-            'cliente_id' => 'nullable|exists:clientes,id',
-            'lote' => 'required_if:tipo,entrada|string|max:255',
+            'fornecedor_id' => 'nullable|required_if:tipo,entrada|exists:fornecedores,id',
+            'cliente_id' => 'nullable|required_if:tipo,saida|exists:clientes,id',
+            'lote' => 'nullable|required_if:tipo,entrada|string|max:255',
             'data_validade' => 'nullable|date',
         ]);
 
-        $variation = ProductVariation::findOrFail($request->product_variation_id);
-
         try {
-            DB::transaction(function () use ($request, $variation) {
-                if ($request->tipo === 'entrada') {
-                    $this->handleEntrada($request, $variation);
-                } else {
-                    $this->handleSaida($request, $variation);
-                }
-            });
+            // 3. Usar o serviço para executar a lógica
+            $this->estoqueService->registrarMovimentacao($validatedData);
         } catch (Exception $e) {
             return back()->withErrors(['operacao' => $e->getMessage()])->withInput();
         }

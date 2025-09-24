@@ -77,6 +77,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
         Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
     });
+
+    // Rota do Dashboard de Vendas
+    Route::get('/vendas/dashboard', function () {
+        return view('vendas.dashboard');
+    })->name('vendas.dashboard');
 });
 
 /*

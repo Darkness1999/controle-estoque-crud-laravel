@@ -20,4 +20,11 @@ class ProdutoApiController extends Controller
         // Retorna uma coleção de produtos formatada pelo nosso Resource
         return ProdutoResource::collection($produtos);
     }
+
+    public function show(Produto $produto)
+    {
+        // Carrega todos os relacionamentos necessários para a visão detalhada
+        $produto->load('categoria', 'marca', 'fornecedor', 'variations.attributeValues.atributo');
+        return new ProdutoResource($produto);
+    }
 }

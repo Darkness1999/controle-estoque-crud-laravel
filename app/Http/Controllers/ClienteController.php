@@ -26,6 +26,7 @@ class ClienteController extends Controller
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',
+            'condicoes_pagamento' => 'nullable|string|max:255',
         ]);
 
         Cliente::create($request->all());
@@ -58,6 +59,7 @@ class ClienteController extends Controller
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',
+            'condicoes_pagamento' => 'nullable|string|max:255',
         ]);
 
         $cliente->update($request->all());

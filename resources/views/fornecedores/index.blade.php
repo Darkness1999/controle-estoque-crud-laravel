@@ -34,6 +34,11 @@
 
                         {{-- Botões de Ação --}}
                         <div class="flex space-x-2">
+                            <td class="px-6 py-4 flex items-center space-x-4">
+                                <a href="{{ route('fornecedores.show', $fornecedor->id) }}" class="px-3 py-1 bg-blue-500 text-white rounded-md text-xs uppercase font-semibold hover:bg-blue-900 ">Detalhes</a>
+
+                            </td>
+                            
                             <a href="{{ route('fornecedores.edit', $fornecedor->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded-md text-xs uppercase font-semibold hover:bg-yellow-600">
                                 Editar
                             </a>

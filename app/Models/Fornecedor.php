@@ -27,6 +27,7 @@ class Fornecedor extends Model
         'email',
         'telefone',
         'endereco',
+        'condicoes_pagamento'
     ];
 
     public function produtos()

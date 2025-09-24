@@ -31,6 +31,10 @@
                             <strong class="block text-gray-500 dark:text-gray-400">Telefone</strong>
                             <span>{{ $cliente->telefone ?? 'N/A' }}</span>
                         </div>
+                        <div>
+                            <strong class="block text-gray-500 dark:text-gray-400">Condições de Pagamento</strong>
+                            <span>{{ $cliente->condicoes_pagamento ?? 'N/A' }}</span>
+                        </div>
                         <div class="col-span-1 md:col-span-2">
                             <strong class="block text-gray-500 dark:text-gray-400">Endereço</strong>
                             <p>{{ $cliente->endereco ?? 'Nenhum endereço fornecido.' }}</p>

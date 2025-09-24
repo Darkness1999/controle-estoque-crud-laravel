@@ -42,6 +42,10 @@
                             <label for="endereco" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Endereço</label>
                             <textarea id="endereco" name="endereco" rows="4" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">{{ old('endereco', $fornecedor->endereco) }}</textarea>
                         </div>
+                        <div class="mt-4">
+                            <label for="condicoes_pagamento" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Condições de Pagamento</label>
+                            <input id="condicoes_pagamento" name="condicoes_pagamento" type="text" value="{{ old('condicoes_pagamento', $fornecedor->condicoes_pagamento ?? '') }}" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:bg-gray-700">
+                        </div>
 
                         <div class="flex items-center justify-end mt-4">
                             <button type="submit" class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500">

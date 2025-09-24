@@ -7,20 +7,17 @@ use Illuminate\Http\Request;
 
 class FornecedorController extends Controller
 {
-    // Método para LISTAR todos os fornecedores
     public function index()
     {
-        $fornecedores = Fornecedor::all();
-        return view('fornecedores.index', ['fornecedores' => $fornecedores]);
+        $fornecedores = Fornecedor::latest()->paginate(10);
+        return view('fornecedores.index', compact('fornecedores'));
     }
 
-    // Método para mostrar o FORMULÁRIO DE CRIAÇÃO
     public function create()
     {
         return view('fornecedores.create');
     }
 
-    // Método para SALVAR um novo fornecedor
     public function store(Request $request)
     {
         $request->validate([
@@ -29,28 +26,29 @@ class FornecedorController extends Controller
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',
+            'condicoes_pagamento' => 'nullable|string|max:255',
         ]);
 
         Fornecedor::create($request->all());
-
         return redirect()->route('fornecedores.index')->with('sucesso', 'Fornecedor criado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Fornecedor $fornecedor)
     {
-        //
+        $movimentacoes = $fornecedor->movimentacoes()
+                                 ->where('tipo', 'entrada') // Apenas entradas
+                                 ->with('productVariation.produto', 'productVariation.attributeValues.atributo')
+                                 ->latest()
+                                 ->paginate(10);
+
+        return view('fornecedores.show', compact('fornecedor', 'movimentacoes'));
     }
 
-    // Método para mostrar o FORMULÁRIO DE EDIÇÃO
     public function edit(Fornecedor $fornecedor)
     {
-        return view('fornecedores.edit', ['fornecedor' => $fornecedor]);
+        return view('fornecedores.edit', compact('fornecedor'));
     }
 
-    // Método para ATUALIZAR um fornecedor
     public function update(Request $request, Fornecedor $fornecedor)
     {
         $request->validate([
@@ -59,14 +57,13 @@ class FornecedorController extends Controller
             'email' => 'nullable|email|max:255',
             'telefone' => 'nullable|string|max:20',
             'endereco' => 'nullable|string',
+            'condicoes_pagamento' => 'nullable|string|max:255',
         ]);
 
         $fornecedor->update($request->all());
-
         return redirect()->route('fornecedores.index')->with('sucesso', 'Fornecedor atualizado com sucesso!');
     }
 
-    // Método para APAGAR um fornecedor
     public function destroy(Fornecedor $fornecedor)
     {
         $fornecedor->delete();

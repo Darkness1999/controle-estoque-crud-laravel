@@ -20,6 +20,7 @@ class Cliente extends Model
         'email',
         'telefone',
         'endereco',
+        'condicoes_pagamento',
     ];
 
     public function movimentacoes() 

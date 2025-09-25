@@ -15,6 +15,7 @@ use App\Http\Controllers\MovimentacaoEstoqueController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\VendasDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,9 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Dashboards
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::get('/vendas/dashboard', function () {
-        return view('vendas.dashboard');
-    })->name('vendas.dashboard');
+
+    Route::get('/vendas/dashboard', [VendasDashboardController::class, 'index'])->name('vendas.dashboard');
+    Route::get('/vendas/search-variations', [VendasDashboardController::class, 'searchVariations'])->name('vendas.search');
+    Route::get('/vendas/sales-data/{variation}', [VendasDashboardController::class, 'getSalesData'])->name('vendas.sales_data');
 
     // Perfil do Utilizador
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

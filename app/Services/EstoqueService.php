@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\ProductVariation;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class EstoqueService
@@ -15,14 +15,16 @@ class EstoqueService
         $tipo = $dados['tipo'];
         $quantidade = $dados['quantidade'];
 
-        if ($tipo === 'saida') {
-            if ($quantidade > $variation->estoque_atual) {
-                throw new Exception('A quantidade de saída não pode ser maior que o estoque atual.');
+        DB::transaction(function () use ($dados, $variation, $tipo, $quantidade) {
+            if ($tipo === 'saida') {
+                if ($quantidade > $variation->estoque_atual) {
+                    throw new Exception('A quantidade de saída não pode ser maior que o estoque atual.');
+                }
+                $this->handleSaida($dados, $variation, $quantidade);
+            } else {
+                $this->handleEntrada($dados, $variation, $quantidade);
             }
-            $this->handleSaida($dados, $variation, $quantidade);
-        } else {
-            $this->handleEntrada($dados, $variation, $quantidade);
-        }
+        });
     }
 
     private function handleEntrada(array $dados, ProductVariation $variation, int $quantidade): void
@@ -35,7 +37,7 @@ class EstoqueService
 
         $variation->movimentacoes()->create([
             'lote_estoque_id' => $lote->id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? null,
             'tipo' => 'entrada',
             'quantidade' => $quantidade,
             'motivo' => $dados['motivo'],
@@ -58,7 +60,7 @@ class EstoqueService
 
             $variation->movimentacoes()->create([
                 'lote_estoque_id' => $lote->id,
-                'user_id' => Auth::id(),
+                'user_id' => Auth::id() ?? null,
                 'tipo' => 'saida',
                 'quantidade' => $removerDesteLote,
                 'motivo' => $dados['motivo'],

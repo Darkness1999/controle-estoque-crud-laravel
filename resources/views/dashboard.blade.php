@@ -89,7 +89,7 @@
         new Chart(document.getElementById('saidasChart'), {
             type: 'line',
             data: {
-                labels: @json($labelsSaidas),
+                labels: @json($labelsFormatados),
                 datasets: [{
                     label: 'Saídas',
                     data: @json($dataSaidas),
@@ -136,7 +136,7 @@
         new Chart(document.getElementById('comparativoChart'), {
             type: 'bar',
             data: {
-                labels: @json($labelsSaidas),
+                labels: @json($labelsFormatados),
                 datasets: [
                     {
                         label: 'Entradas',

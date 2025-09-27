@@ -18,18 +18,15 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $periodo = $request->input('periodo', '30d');
-        $endDate = now();
         $startDate = $this->getStartDateFromPeriod($periodo);
-        $cacheKeyPeriodo = '_' . $periodo;
+        $cacheKeyPeriodo = '_periodo_' . $periodo;
 
+        // --- KPIs e Listas ---
         $valorEstoqueCusto = Cache::remember('dashboard_valor_estoque_custo', now()->addMinutes(10), function () {
-            return LoteEstoque::join('product_variations', 'lote_estoques.product_variation_id', '=', 'product_variations.id')
-                ->sum(DB::raw('lote_estoques.quantidade_atual * product_variations.preco_custo'));
+            return ProductVariation::sum(DB::raw('preco_custo * (SELECT SUM(quantidade_atual) FROM lote_estoques WHERE product_variation_id = product_variations.id)'));
         });
-
         $valorEstoqueVenda = Cache::remember('dashboard_valor_estoque_venda', now()->addMinutes(10), function () {
-            return LoteEstoque::join('product_variations', 'lote_estoques.product_variation_id', '=', 'product_variations.id')
-                ->sum(DB::raw('lote_estoques.quantidade_atual * product_variations.preco_venda'));
+            return ProductVariation::sum(DB::raw('preco_venda * (SELECT SUM(quantidade_atual) FROM lote_estoques WHERE product_variation_id = product_variations.id)'));
         });
         
         // --- KPI 2: Alertas de Estoque Baixo (LÓGICA REESCRITA E CORRIGIDA) ---
@@ -49,43 +46,63 @@ class DashboardController extends Controller
         });
         $countEstoqueBaixo = $variacoesEstoqueBaixo->count();
 
-        // O restante do código permanece o mesmo
-        $totalSaidasAtual = Cache::remember('dashboard_total_saidas_atual' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate) {
-            return MovimentacaoEstoque::where('tipo', 'saida')->where('created_at', '>=', $startDate)->sum('quantidade');
-        });
-        $tendenciaSaidas = Cache::remember('dashboard_tendencia_saidas' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate, $endDate, $totalSaidasAtual) {
-            $daysDifference = $startDate->diffInDays($endDate);
-            $previousStartDate = $startDate->copy()->subDays($daysDifference + 1);
-            $previousEndDate = $startDate->copy()->subDay();
-            $totalSaidasAnterior = MovimentacaoEstoque::where('tipo', 'saida')->whereBetween('created_at', [$previousStartDate, $previousEndDate])->sum('quantidade');
-            return $this->calcularTendencia($totalSaidasAtual, $totalSaidasAnterior);
-        });
-        $saidasPorDia = Cache::remember('dashboard_saidas_por_dia' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate) {
-            return MovimentacaoEstoque::where('tipo', 'saida')->where('created_at', '>=', $startDate)->groupBy('data')->orderBy('data', 'asc')->get([DB::raw('DATE(created_at) as data'), DB::raw('SUM(quantidade) as total')]);
-        });
-        $labelsSaidas = $saidasPorDia->pluck('data')->map(fn ($date) => Carbon::parse($date)->format('d/m'));
-        $dataSaidas = $saidasPorDia->pluck('total');
-        $categoriasPorValor = Cache::remember('dashboard_categorias_por_valor', now()->addMinutes(10), function () {
-            return LoteEstoque::join('product_variations', 'lote_estoques.product_variation_id', '=', 'product_variations.id')
-                ->join('produtos', 'product_variations.produto_id', '=', 'produtos.id')
-                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id')
-                ->select('categorias.id', 'categorias.nome', DB::raw('SUM(lote_estoques.quantidade_atual * product_variations.preco_venda) as valor_total'))
-                ->groupBy('categorias.id', 'categorias.nome')->orderBy('valor_total', 'desc')->take(5)->get();
-        });
-        $variacoesComSaida = MovimentacaoEstoque::where('tipo', 'saida')->where('created_at', '>=', $startDate)->pluck('product_variation_id')->unique();
-        $produtosParados = Cache::remember('dashboard_produtos_parados' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate, $variacoesComSaida) {
+        $produtosParados = Cache::remember('dashboard_produtos_parados' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate) {
+            $variacoesComSaida = MovimentacaoEstoque::where('tipo', 'saida')
+                                ->where('created_at', '>=', $startDate)
+                                ->pluck('product_variation_id')->unique();
             return ProductVariation::whereHas('lotesEstoque', fn($q) => $q->where('quantidade_atual', '>', 0))
                                 ->whereNotIn('id', $variacoesComSaida)->with('produto')->take(10)->get();
         });
         $ultimasMovimentacoes = Cache::remember('dashboard_ultimas_movimentacoes', now()->addSeconds(30), function () {
-            return MovimentacaoEstoque::with('productVariation.produto', 'user')->latest()->take(5)->get();
+            return MovimentacaoEstoque::with('productVariation.produto', 'user')->latest()->limit(10)->get();
+        });
+
+        // --- Dados para os Gráficos ---
+        $categoriasPorValor = Cache::remember('dashboard_categorias_por_valor', now()->addMinutes(10), function () {
+            return Categoria::query()
+                ->join('produtos', 'categorias.id', '=', 'produtos.categoria_id')
+                ->join('product_variations', 'produtos.id', '=', 'product_variations.produto_id')
+                ->join('lote_estoques', 'product_variations.id', '=', 'lote_estoques.product_variation_id')
+                ->select('categorias.id', 'categorias.nome', DB::raw('SUM(lote_estoques.quantidade_atual * product_variations.preco_venda) as valor_total'))
+                ->groupBy('categorias.id', 'categorias.nome')
+                ->orderBy('valor_total', 'desc')
+                ->limit(5)
+                ->get();
+        });
+        
+        $saidasPorDia = Cache::remember('dashboard_saidas_por_dia' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate) {
+            return MovimentacaoEstoque::where('tipo', 'saida')->where('created_at', '>=', $startDate)->groupBy('data')->orderBy('data', 'asc')->get([ DB::raw('DATE(created_at) as data'), DB::raw('SUM(quantidade) as total') ]);
+        });
+        
+        $entradasPorDia = Cache::remember('dashboard_entradas_por_dia' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate) {
+            return MovimentacaoEstoque::where('tipo', 'entrada')->where('created_at', '>=', $startDate)->groupBy('data')->orderBy('data', 'asc')->get([ DB::raw('DATE(created_at) as data'), DB::raw('SUM(quantidade) as total') ]);
+        });
+
+        // --- Alinhamento dos dados ---
+        $labels = $saidasPorDia->pluck('data')->merge($entradasPorDia->pluck('data'))->unique()->sort();
+        $dataSaidas = $labels->map(fn ($label) => $saidasPorDia->firstWhere('data', $label)->total ?? 0);
+        $dataEntradas = $labels->map(fn ($label) => $entradasPorDia->firstWhere('data', $label)->total ?? 0);
+        $labelsFormatados = $labels->map(fn ($date) => Carbon::parse($date)->format('d/m'));
+        
+        // --- Cálculo de Tendência ---
+        $totalSaidasAtual = $dataSaidas->sum();
+        $tendenciaSaidas = Cache::remember('dashboard_tendencia_saidas' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate, $totalSaidasAtual) {
+            $diasNoPeriodo = $startDate->diffInDays(now()) + 1;
+            if ($diasNoPeriodo <= 1) return null;
+
+            $startDateAnterior = $startDate->copy()->subDays($diasNoPeriodo);
+            $endDateAnterior = $startDate->copy()->subDay();
+            
+            $totalSaidasAnterior = MovimentacaoEstoque::where('tipo', 'saida')->whereBetween('created_at', [$startDateAnterior, $endDateAnterior])->sum('quantidade');
+
+            return $this->calcularTendencia($totalSaidasAtual, $totalSaidasAnterior);
         });
 
         return view('dashboard', compact(
-            'valorEstoqueCusto', 'valorEstoqueVenda', 'countEstoqueBaixo', 'variacoesEstoqueBaixo',
-            'labelsSaidas', 'dataSaidas', 'categoriasPorValor',
-            'produtosParados', 'ultimasMovimentacoes',
-            'tendenciaSaidas', 'totalSaidasAtual', 'periodo'
+            'periodo', 'valorEstoqueCusto', 'valorEstoqueVenda', 'countEstoqueBaixo', 'variacoesEstoqueBaixo',
+            'produtosParados', 'ultimasMovimentacoes', 'categoriasPorValor',
+            'labelsFormatados', 'dataSaidas', 'dataEntradas',
+            'totalSaidasAtual', 'tendenciaSaidas'
         ));
     }
     

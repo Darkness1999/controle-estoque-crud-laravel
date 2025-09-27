@@ -21,9 +21,13 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // Rotas de Consulta
     Route::apiResource('produtos', ProdutoApiController::class);
+
     Route::get('/categorias', [CategoriaApiController::class, 'index']);
+
     Route::get('/marcas', [MarcaApiController::class, 'index']);
+
     Route::get('/clientes', [ClienteApiController::class, 'index']);
+    
     Route::get('/fornecedores', [FornecedorApiController::class, 'index']);
 
     // Rota Operacional

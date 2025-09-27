@@ -29,7 +29,8 @@ class ProdutoApiController extends Controller
 
         $produto = Produto::create($validatedData);
 
-        return new ProdutoResource($produto);
+        // Retorna o recurso criado com status 201 (Created)
+        return (new ProdutoResource($produto))->response()->setStatusCode(201);
     }
 
     public function show(Produto $produto)
@@ -57,6 +58,8 @@ class ProdutoApiController extends Controller
     public function destroy(Produto $produto)
     {
         $produto->delete(); // Isto irá executar o Soft Delete que implementámos
-        return response()->json(null, 204); // Resposta "No Content" para sucesso
+
+        // Retorna uma resposta vazia com status 204 (No Content)
+        return response()->json(null, 204);
     }
 }

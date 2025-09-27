@@ -7,6 +7,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductVariationResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
@@ -14,6 +19,9 @@ class ProductVariationResource extends JsonResource
             'sku' => $this->sku,
             'preco_venda' => $this->preco_venda,
             'estoque_atual' => $this->estoque_atual,
+            'atributos' => $this->attributeValues->map(function ($value) {
+                return $value->atributo->nome . ': ' . $value->valor;
+            })->implode(', '),
         ];
     }
 }

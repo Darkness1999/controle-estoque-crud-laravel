@@ -9,22 +9,16 @@ use Illuminate\Http\Request;
 
 class ProdutoApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Busca os produtos com os seus relacionamentos para evitar consultas extras
         $produtos = Produto::with('categoria', 'marca')->paginate(15);
-
-        // Retorna uma coleção de produtos formatada pelo nosso Resource
         return ProdutoResource::collection($produtos);
     }
 
     public function show(Produto $produto)
     {
         // Carrega todos os relacionamentos necessários para a visão detalhada
-        $produto->load('categoria', 'marca', 'fornecedor', 'variations.attributeValues.atributo');
+        $produto->load('categoria', 'marca', 'variations.attributeValues.atributo');
         return new ProdutoResource($produto);
     }
 }

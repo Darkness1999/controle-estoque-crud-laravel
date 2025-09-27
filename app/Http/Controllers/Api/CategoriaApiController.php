@@ -9,8 +9,11 @@ use Illuminate\Http\Request;
 
 class CategoriaApiController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return CategoriaResource::collection(Categoria::all());
+        return CategoriaResource::collection(Categoria::orderBy('nome')->get());
     }
 }

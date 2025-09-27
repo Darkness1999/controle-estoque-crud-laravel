@@ -9,8 +9,11 @@ use Illuminate\Http\Request;
 
 class MarcaApiController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return MarcaResource::collection(Marca::all());
+        return MarcaResource::collection(Marca::orderBy('nome')->get());
     }
 }

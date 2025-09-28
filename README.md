@@ -1,12 +1,16 @@
-# Controle de Estoque - Uma Aplicação Web Robusta com Laravel
+<h1 align="center">
+  📦 Controle de Estoque - Uma Aplicação Web Robusta com Laravel
+</h1>
 
 ![Status](https://img.shields.io/badge/status-Projeto%20em%20constru%C3%A7%C3%A3o-orange?style=for-the-badge)
 
-![Capa do Projeto - Visualização das Telas em Breve]()
+<p align="center">
+  <img src="resources/img/tela-dashboard-principal.png" alt="Tela Dashboard Inicial" width="800"/>
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.2%2B-%23777BB4?style=for-the-badge&logo=php" alt="PHP">
-  <img src="https://img.shields.io/badge/Laravel-11.x-%23FF2D20?style=for-the-badge&logo=laravel" alt="Laravel">
+  <img src="https://img.shields.io/badge/Laravel-12.x-%23FF2D20?style=for-the-badge&logo=laravel" alt="Laravel">
   <img src="https://img.shields.io/badge/Alpine.js-3.x-%2377C1D2?style=for-the-badge&logo=almalinux" alt="Alpine.js">
   <img src="https://img.shields.io/badge/PostgreSQL-14%2B-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.x-%2306B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS">
@@ -14,9 +18,9 @@
 
 ## 🎯 Sobre o Projeto
 
-Este projeto é uma aplicação web completa e profissional para **Gestão de Estoque**, desenvolvida do zero com o ecossistema Laravel. O objetivo foi criar uma solução que não apenas realizasse as operações básicas de um CRUD, mas que também incorporasse as melhores práticas de desenvolvimento, uma arquitetura escalável e funcionalidades de inteligência de negócio (BI) para auxiliar na tomada de decisões.
+Este projeto é uma aplicação web completa e profissional para **Gestão de Estoque**, desenvolvida do zero com **PHP 8**, **Laravel**, **PostgreSQL** e **TailwindCSS**, aplicando arquitetura **MVC** e boas práticas de mercado. O objetivo foi criar uma solução que não apenas realizasse as operações básicas de um CRUD, mas que também incorporasse as melhores práticas de desenvolvimento, uma arquitetura escalável e funcionalidades de inteligência de negócio para auxiliar na tomada de decisões.
 
-A jornada de criação deste sistema serviu como um profundo campo de estudo e prática, solidificando conceitos de backend, frontend moderno, arquitetura de software e gestão de banco de dados.
+A jornada de criação deste sistema serviu como um profundo campo de estudo e prática, solidificando conceitos de **backend**, **frontend moderno**, **arquitetura de software** e **gestão de banco de dados**.
 
 ---
 
@@ -41,10 +45,20 @@ Um dos maiores **desafios** foi a depuração de bugs de continuidade que surgir
 
 O sistema conta com um ecossistema completo de funcionalidades para uma gestão de stock de nível profissional.
 
+### 🏛 Arquitetura do Sistema
+
+```mermaid
+flowchart TD
+    U[Usuário / Navegador] --> F[Frontend<br/>Tailwind + Alpine.js / Blade]
+    F --> A[API REST<br/>Laravel + Sanctum]
+    A <--> DB[(PostgreSQL)]
+    A --> J[Jobs & Scheduler<br/>Queues / Workers / BI & Alertas]
+```
+
 ### 📦 Gestão de Produtos e Variações
 Cadastro de produtos com um sistema robusto de variações (SKUs), permitindo que cada combinação de atributos (ex: Cor, Tamanho) tenha seu próprio preço, stock mínimo e histórico.
 
-![Print da Tela de Gestão de Produto - Visualização das Telas em Breve]()
+![Print da Tela de Gestão de Produto - Visualização das Telas em Breve](resources/img/)
 
 ### 📈 Controle de Lotes e Validade
 Toda a entrada de stock é gerida por lotes com data de validade. As saídas seguem a lógica **FEFO (First-Expire, First-Out)**, garantindo a rotação inteligente do stock e minimizando perdas.
@@ -62,21 +76,30 @@ Interface otimizada para registo de entradas e saídas, com suporte a **leitores
 ### 🤖 Automação e Alertas
 Sistema proativo que monitoriza o stock e envia **notificações automáticas por e-mail** para os administradores quando um item atinge o seu nível mínimo.
 
+### 🔐 Segurança
+- **CSRF e XSS Protection** nativos do Laravel.  
+- **Autenticação Sanctum** para API.  
+- **Controle de acesso baseado em papéis** (Admin/Operador).  
+- **Logs de auditoria** para cada movimentação de estoque.  
+- **Rate limiting** em endpoints sensíveis.  
+
+### 🔑 Sessões e Autenticação
+- **Login/Logout seguro** com hashing de senhas via **bcrypt**.  
+- **Sessões criptografadas** em PostgreSQL/Redis.  
+- **Expiração automática de sessão** configurável. 
+
 ---
 
 ## 🛠️ Ferramentas e Tecnologias
 
-- **Backend:** PHP v8.4.12, Laravel v12.28.1
-- **Frontend:** Tailwind CSS, Alpine.js, Chart.js
-- **Banco de Dados:** PostgreSQL
-- **Ferramentas de Desenvolvimento:**
-  - **VSCode:** Editor de código principal.
-  - **DBeaver:** Ferramenta de gestão de banco de dados.
-  - **Postman:** Para testes e depuração da API.
-  - **Git & GitHub:** Para controlo de versão e alojamento do código.
-- **Servidor de Desenvolvimento:** Vite
-- **Autenticação de API:** Laravel Sanctum
-- **Testes de E-mail:** Mailtrap.io
+| Camada | Tecnologia |
+|-------|------------|
+| Backend | PHP 8.x, Laravel 12.x |
+| Banco de Dados | PostgreSQL 14+ |
+| Frontend | Blade, TailwindCSS, Alpine.js, Chart.js |
+| API | Laravel Sanctum |
+| Desenvolvimento | VSCode, DBeaver, Postman |
+| Testes de E-mail | Mailtrap.io |
 
 ---
 
@@ -91,7 +114,7 @@ Antes de começar, garanta que tem as seguintes ferramentas instaladas e a funci
 - **Node.js e NPM:** Para compilação de assets de frontend. Verifique com `node -v` e `npm -v`.
 - **PostgreSQL:** O nosso banco de dados.
 - **Git:** Para clonar o projeto.
-- **Um cliente de banco de dados (Recomendado):** **DBeaver** ou similar.
+- **Um cliente de banco de dados:** (ex: **DBeaver** ou similar).
 
 ### **Passo 1: Preparar o Banco de Dados**
 
@@ -102,7 +125,7 @@ Antes de começar, garanta que tem as seguintes ferramentas instaladas e a funci
    * **Codificação (Encoding):** `UTF8`
    * **Collation/Ordenação:** `pt_BR.UTF-8` *(ou utilize o padrão do seu sistema caso não esteja disponível)*
 
-> 💡 **Dica:** No DBeaver, clique com o botão direito sobre a conexão ➜ **Criar ➜ Banco de Dados**, informe os parâmetros acima e confirme.
+> 💡 **Dica:** No DBeaver, clique com o botão direito sobre a conexão ➜ **Create ➜ Connection**, informe os parâmetros acima e confirme. Dependendo da versão o caminho pode mudar..
 
 ### Passo 2: Obter o Código
 1.  Navegue no seu terminal para a pasta onde deseja guardar o projeto.

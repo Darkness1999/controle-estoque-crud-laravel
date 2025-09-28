@@ -49,10 +49,23 @@ O sistema conta com um ecossistema completo de funcionalidades para uma gestão 
 
 ```mermaid
 flowchart TD
-    U[Usuário / Navegador] --> F[Frontend<br/>Tailwind + Alpine.js / Blade]
-    F --> A[API REST<br/>Laravel + Sanctum]
-    A <--> DB[(PostgreSQL)]
-    A --> J[Jobs & Scheduler<br/>Queues / Workers / BI & Alertas]
+    subgraph "Interface Web (Navegador)"
+        U[Utilizador] --> W[Rotas Web]
+        W --> C[Controllers Web]
+        C --> V[Views Blade<br/>Tailwind + Alpine.js]
+        C <--> L[Lógica de Negócio / Models]
+    end
+    
+    subgraph "Integrações Externas"
+        EXT[App Mobile / E-commerce] --> API[Rotas API<br/>/api/*]
+        API --> AC[API Controllers]
+        AC <--> L
+    end
+
+    subgraph "Backend (Servidor)"
+        L <--> DB[(PostgreSQL)]
+        L --> J[Jobs & Scheduler<br/>Alertas por E-mail]
+    end
 ```
 
 ### 📦 Gestão de Produtos e Variações
@@ -109,12 +122,20 @@ Este guia detalhado irá ajudá-lo a configurar o ambiente e a executar o projet
 
 ### Pré-requisitos
 Antes de começar, garanta que tem as seguintes ferramentas instaladas e a funcionar:
-- **PHP 8.2+:** Verifique a sua versão com `php -v`.
-- **Composer:** Gestor de dependências para o PHP. Verifique com `composer --version`.
-- **Node.js e NPM:** Para compilação de assets de frontend. Verifique com `node -v` e `npm -v`.
-- **PostgreSQL:** O nosso banco de dados.
-- **Git:** Para clonar o projeto.
+- **Git:** ([Download](https://git-scm.com/downloads))
+- **PHP 8.2+:** ([Download para Windows](https://windows.php.net/download/))
+- **Composer:** ([Download](https://getcomposer.org/download/))
+- **Node.js e NPM:** ([Download](https://nodejs.org/))
+- **PostgreSQL:** ([Download](https://www.postgresql.org/download/))
 - **Um cliente de banco de dados:** (ex: **DBeaver** ou similar).
+
+> **⚠️ Importante: Configuração do PHP**
+> Após instalar o PHP, você precisa de editar o arquivo de configuração `php.ini`. Lembre-se dos erros que enfrentámos! Garanta que as seguintes extensões estão ativadas (removendo o `;` do início da linha):
+> ```ini
+> extension=gd
+> extension=pgsql
+> extension=pdo_pgsql
+> ```
 
 ### **Passo 1: Preparar o Banco de Dados**
 

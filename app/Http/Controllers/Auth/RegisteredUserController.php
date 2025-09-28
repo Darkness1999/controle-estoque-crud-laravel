@@ -35,10 +35,14 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Verifica se já existe algum utilizador no banco de dados.
+        $userRole = User::count() === 0 ? 'admin' : 'operador';
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $userRole,
         ]);
 
         event(new Registered($user));

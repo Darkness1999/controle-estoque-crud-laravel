@@ -22,7 +22,7 @@
             </div>
 
             {{-- Nome do Sistema --}}
-            <span class="text-xl font-bold uppercase font-semibold text-gray-800 dark:text-gray-200 tracking-tight">
+            <span class="text-xl font-bold uppercase text-gray-800 dark:text-gray-200 tracking-tight">
                 Controle de Estoque
             </span>
         </a>

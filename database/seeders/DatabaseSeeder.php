@@ -17,14 +17,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Criar Utilizadores
-        $this->command->info('A criar utilizadores...');
-        $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@stockpro.com',
-            'role' => 'admin',
-        ]);
-        User::factory(5)->create();
+        // Pega no primeiro utilizador (que será o admin que se registou) ou cria um se não existir
+        $admin = User::first() ?? User::factory()->create(['role' => 'admin']);
 
         // 2. Criar Dados Mestres
         $this->command->info('A criar dados mestres (Categorias, Marcas, etc.)...');

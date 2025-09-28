@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\MovimentacaoApiController;
 use App\Http\Controllers\Api\ClienteApiController;
 use App\Http\Controllers\Api\FornecedorApiController;
 use App\Http\Controllers\Api\ProductVariationApiController;
+use App\Http\Controllers\Api\SearchApiController;
 
 // Rota pública para login na API
 Route::post('/login', [AuthController::class, 'login']);
@@ -38,4 +39,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/produtos/{produto}/variations', [ProductVariationApiController::class, 'store']);
     Route::put('/variations/{variation}', [ProductVariationApiController::class, 'update']);
     Route::delete('/variations/{variation}', [ProductVariationApiController::class, 'destroy']);
+
+    // --- A NOSSA NOVA ROTA DE BUSCA OTIMIZADA ---
+    Route::get('/search-by-code/{code}', [SearchApiController::class, 'searchByCode']);
 });

@@ -10,12 +10,18 @@ use Illuminate\Validation\Rule;
 
 class ProdutoApiController extends Controller
 {
+    /**
+     * Retorna uma lista paginada de produtos.
+     */
     public function index()
     {
         $produtos = Produto::with('categoria', 'marca')->paginate(15);
         return ProdutoResource::collection($produtos);
     }
 
+    /**
+     * Cria um novo produto base.
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -33,12 +39,18 @@ class ProdutoApiController extends Controller
         return (new ProdutoResource($produto))->response()->setStatusCode(201);
     }
 
+    /**
+     * Retorna os detalhes de um produto específico.
+     */
     public function show(Produto $produto)
     {
         $produto->load('categoria', 'marca', 'fornecedor', 'variations.attributeValues.atributo');
         return new ProdutoResource($produto);
     }
 
+    /**
+     * Atualiza um produto existente.
+     */
     public function update(Request $request, Produto $produto)
     {
         $validatedData = $request->validate([
@@ -55,6 +67,9 @@ class ProdutoApiController extends Controller
         return new ProdutoResource($produto);
     }
 
+    /**
+     * Apaga (soft delete) um produto.
+     */
     public function destroy(Produto $produto)
     {
         $produto->delete(); // Isto irá executar o Soft Delete que implementámos

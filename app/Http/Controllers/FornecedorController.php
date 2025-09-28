@@ -36,7 +36,7 @@ class FornecedorController extends Controller
     public function show(Fornecedor $fornecedor)
     {
         $movimentacoes = $fornecedor->movimentacoes()
-                                 ->where('tipo', 'entrada') // Apenas entradas
+                                 ->where('tipo', 'entrada')
                                  ->with('productVariation.produto', 'productVariation.attributeValues.atributo')
                                  ->latest()
                                  ->paginate(10);

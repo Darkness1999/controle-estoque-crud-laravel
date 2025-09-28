@@ -66,7 +66,7 @@ Toda a entrada de stock é gerida por lotes com data de validade. As saídas seg
 ### 🚚 Movimentação e Rastreabilidade
 Interface otimizada para registo de entradas e saídas, com suporte a **leitores de código de barras** e associação a **Clientes** e **Fornecedores**, garantindo um histórico de movimentações 100% auditável.
 
-![Print da Tela de Movimentação - Visualização das Telas em Breve]()
+![Print da Tela de Movimentação - Visualização das Telas em Breve](resources/img/)
 
 ### 📊 Dashboards e Relatórios
 - **Dashboard de BI:** Uma visão centralizada com KPIs, tendências, gráficos clicáveis (drill-down) e listas de ação (alertas de stock baixo, produtos parados).

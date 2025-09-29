@@ -102,6 +102,14 @@ Interface otimizada para registo de entradas e saídas, com suporte a **leitores
 - **Dashboard de Vendas Interativo:** Ferramenta de análise de vendas com busca dinâmica de produtos e atualização de gráficos em tempo real via AJAX.
 - **Relatório de Histórico:** Consulta detalhada de todas as movimentações, com filtros avançados.
 
+<details>
+  <summary>🖼️ CLIQUE AQUI PARA VISUALIZAR..</summary>
+
+  ![Tela ](resources/img/tela-dashboard-principal.png)
+#
+  ![Tela ](resources/img/tela-dashboard-principal2.png)
+</details>
+
 ### 🤖 Automação e Alertas
 Sistema proativo que monitoriza o stock e envia **notificações automáticas por e-mail** para os administradores quando um item atinge o seu nível mínimo.
 

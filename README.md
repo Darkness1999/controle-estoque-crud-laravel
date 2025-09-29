@@ -71,7 +71,17 @@ flowchart TD
 ### 📦 Gestão de Produtos e Variações
 Cadastro de produtos com um sistema robusto de variações (SKUs), permitindo que cada combinação de atributos (ex: Cor, Tamanho) tenha seu próprio preço, stock mínimo e histórico.
 
-![Print da Tela de Gestão de Produto - Visualização das Telas em Breve](resources/img/)
+<details>
+  <summary>🖼️ CLIQUE AQUI PARA VISUALIZAR..</summary>
+
+  ![Tela ](resources/img/tela-edit-info-produtos.png)
+#
+  ![Tela ](resources/img/tela-cad-produtos.png)
+#
+  ![Tela ](resources/img/tela-variacoes-produtos.png)
+#
+  ![Tela ](resources/img/tela-cad-atributos-produtos.png)
+</details>
 
 ### 📈 Controle de Lotes e Validade
 Toda a entrada de stock é gerida por lotes com data de validade. As saídas seguem a lógica **FEFO (First-Expire, First-Out)**, garantindo a rotação inteligente do stock e minimizando perdas.

@@ -4,68 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etiqueta - {{ $variation->sku }}</title>
-    
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Estilos específicos para impressão */
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Regras específicas de impressão */
         @media print {
             body {
                 margin: 0;
                 padding: 0;
+                background: white !important;
             }
             .label-container {
-                border: none;
-                box-shadow: none;
+                /* Mantém tamanho exato da etiqueta */
+                width: 10cm !important;
+                height: 5cm !important;
+                /* Mantém a borda para corte */
+                border: 1px dashed #444 !important;
                 page-break-after: always;
             }
-            .no-print {
-                display: none;
-            }
-            /* AQUI A CORREÇÃO MÁGICA */
+            .no-print { display: none; }
             .barcode-image, .barcode-image * {
                 print-color-adjust: exact;
-                -webkit-print-color-adjust: exact; /* Para compatibilidade com Chrome/Safari */
+                -webkit-print-color-adjust: exact;
             }
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
 
-    <div class="no-print mb-4 p-4 bg-blue-100 text-blue-800 rounded-lg text-center">
-        <p>A impressão deve iniciar automaticamente.</p>
-        <p class="text-xs">Se não iniciar, clique em "Imprimir" ou pressione Ctrl+P.</p>
-        <button onclick="window.print()" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md">Imprimir</button>
+    <!-- Aviso antes da impressão -->
+    <div class="no-print mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-800 rounded text-center max-w-sm">
+        <p class="font-semibold">A impressão deve iniciar automaticamente.</p>
+        <p class="text-xs mt-1">Se não iniciar, clique em <strong>Imprimir</strong> ou pressione
+            <kbd class="px-1 bg-gray-200 rounded">Ctrl</kbd> +
+            <kbd class="px-1 bg-gray-200 rounded">P</kbd>.
+        </p>
+        <button onclick="window.print()"
+                class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">
+            🖨️ Imprimir
+        </button>
     </div>
 
-    <div class="label-container bg-white shadow-lg p-3 flex flex-col justify-between" style="width: 10cm; height: 5cm;">
-        
-        <div class="text-left">
-            <p class="text-lg font-bold truncate">{{ $variation->produto->nome }}</p>
-            <p class="text-xs text-gray-600">
+    <!-- Etiqueta -->
+    <div class="label-container bg-white rounded p-2 flex flex-col justify-between shadow-sm"
+         style="width:10cm; height:5cm;">
+
+        <!-- Produto -->
+        <div>
+            <p class="text-base font-semibold text-gray-800 leading-tight truncate">
+                {{ $variation->produto->nome }}
+            </p>
+            <p class="text-[11px] text-gray-600 leading-snug mt-0.5">
                 @foreach ($variation->attributeValues as $value)
-                    <span>{{ $value->valor }}</span>@if (!$loop->last)<span class="mx-1">/</span>@endif
+                    <span>{{ $value->valor }}</span>@if (!$loop->last)<span class="mx-0.5">/</span>@endif
                 @endforeach
             </p>
         </div>
 
+        <!-- Código de Barras -->
         <div class="w-full text-center my-1 barcode-image">
-            {!! DNS1D::getBarcodeHTML($variation->sku, 'C128', 1.5, 45, 'black', false) !!}
-            <p class="text-xs font-mono tracking-widest mt-1">{{ $variation->sku }}</p>
+            {!! DNS1D::getBarcodeHTML($variation->sku, 'C128', 1.4, 40, 'black', false) !!}
+            <p class="text-[10px] font-mono tracking-widest mt-0.5 text-gray-700">{{ $variation->sku }}</p>
         </div>
 
+        <!-- Preço -->
         <div class="text-right">
-            <span class="text-xs">R$</span>
-            <span class="text-2xl font-bold">{{ number_format($variation->preco_venda, 2, ',', '.') }}</span>
+            <span class="text-[10px] text-gray-500 align-top">R$</span>
+            <span class="text-xl font-bold text-gray-900">{{ number_format($variation->preco_venda, 2, ',', '.') }}</span>
         </div>
 
     </div>
 
     <script>
-        window.onload = function() {
-            window.print();
-        }
+        window.onload = function() { window.print(); };
     </script>
-
 </body>
 </html>

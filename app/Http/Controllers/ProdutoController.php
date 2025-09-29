@@ -19,7 +19,9 @@ class ProdutoController extends Controller
         if ($request->filled('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
         }
-        $produtos = $query->get();
+
+        $produtos = $query->paginate(15); // Mostra 15 produtos por página
+
         $categoriaFiltro = $request->filled('categoria_id') ? Categoria::find($request->categoria_id) : null;
         return view('produtos.index', compact('produtos', 'categoriaFiltro'));
     }

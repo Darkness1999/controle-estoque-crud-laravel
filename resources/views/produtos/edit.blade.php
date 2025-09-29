@@ -1,11 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Gerenciar Produto: <span class="text-indigo-500">{{ $produto->nome }}</span>
+        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight flex items-center space-x-2">
+            <span>⚙️ Gerenciar Produto:</span>
+            <span class="text-indigo-600 dark:text-indigo-400">{{ $produto->nome }}</span>
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    {{-- ALERTA DE SUCESSO --}}
+    <div class="py-4">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('sucesso'))
                 <x-alert :message="session('sucesso')" />
@@ -13,83 +15,99 @@
         </div>
     </div>
 
-    <div class="pt-0 pb-12" x-data="{ activeTab: 'variacoes', isModalOpen: false, currentVariation: {} }">
+    <div class="pb-12" x-data="{ activeTab: 'variacoes', isModalOpen: false, currentVariation: {} }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-                <div class="px-6 border-b border-gray-200 dark:border-gray-700">
-                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                        <button @click="activeTab = 'variacoes'" :class="{ 'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'variacoes', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'variacoes' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                            Variações e Estoque
+            {{-- NAVEGAÇÃO ENTRE TABS --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg">
+                <nav class="flex justify-around sm:justify-start border-b border-gray-200 dark:border-gray-700">
+                    @foreach ([
+                        'variacoes' => 'Variações e Estoque',
+                        'gerais' => 'Dados Gerais',
+                        'atributos' => 'Atributos do Produto'
+                    ] as $tab => $label)
+                        <button
+                            @click="activeTab = '{{ $tab }}'"
+                            :class="activeTab === '{{ $tab }}'
+                                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition">
+                            {{ $label }}
                         </button>
-                        <button @click="activeTab = 'gerais'" :class="{ 'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'gerais', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'gerais' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                            Dados Gerais
-                        </button>
-                        <button @click="activeTab = 'atributos'" :class="{ 'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'atributos', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'atributos' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                            Atributos do Produto
-                        </button>
-                    </nav>
-                </div>
+                    @endforeach
+                </nav>
             </div>
 
+            {{-- TAB: VARIAÇÕES --}}
             <div x-show="activeTab === 'variacoes'">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-4">Variações de Produto (SKUs)</h3>
-                        <div class="mb-6">
-                            <h4 class="font-semibold mb-2">Variações Cadastradas</h4>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full">
-                                    <thead class="border-b dark:border-gray-700">
-                                        <tr>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Atributos</th>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">SKU</th>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Preço Venda</th>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Estoque Atual</th>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Estoque Mínimo</th>
-                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Ações</th>
+                        <h3 class="text-lg font-semibold mb-6">Variações de Produto (SKUs)</h3>
+
+                        {{-- LISTAGEM --}}
+                        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-900/30">
+                                    <tr>
+                                        @foreach (['Atributos','SKU','Preço Venda','Estoque Atual','Estoque Mínimo','Ações'] as $col)
+                                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                {{ $col }}
+                                            </th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @forelse ($produto->variations as $variation)
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                            <td class="px-4 py-3 text-sm">
+                                                @foreach ($variation->attributeValues as $value)
+                                                    <span class="font-medium">{{ $value->atributo->nome }}:</span> {{ $value->valor }}@if (!$loop->last), @endif
+                                                @endforeach
+                                            </td>
+                                            <td class="px-4 py-3 text-sm">{{ $variation->sku }}</td>
+                                            <td class="px-4 py-3 text-sm">R$ {{ number_format($variation->preco_venda, 2, ',', '.') }}</td>
+                                            <td class="px-4 py-3 text-sm">{{ $variation->estoque_atual }}</td>
+                                            <td class="px-4 py-3 text-sm">{{ $variation->estoque_minimo }}</td>
+                                            <td class="px-4 py-3 flex items-center gap-2">
+                                                <a href="{{ route('variations.label', $variation->id) }}" target="_blank"
+                                                   class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md font-semibold transition">Etiqueta</a>
+
+                                                <button @click="isModalOpen = true; currentVariation = {{ $variation->toJson() }}"
+                                                        class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs rounded-md font-semibold transition">Editar</button>
+
+                                                <form method="POST" action="{{ route('variations.destroy', $variation->id) }}"
+                                                      onsubmit="return confirm('Tem certeza que deseja apagar esta variação?');" class="inline">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit"
+                                                            class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md font-semibold transition">
+                                                        Apagar
+                                                    </button>
+                                                </form>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($produto->variations as $variation)
-                                            <tr class="border-b dark:border-gray-700">
-                                                <td class="px-4 py-2 text-sm">
-                                                    @foreach ($variation->attributeValues as $value)
-                                                        <span class="font-medium">{{ $value->atributo->nome }}:</span> <span>{{ $value->valor }}</span>@if (!$loop->last), @endif
-                                                    @endforeach
-                                                </td>
-                                                <td class="px-4 py-2 text-sm">{{ $variation->sku }}</td>
-                                                <td class="px-4 py-2 text-sm">R$ {{ number_format($variation->preco_venda, 2, ',', '.') }}</td>
-                                                <td class="px-4 py-2 text-sm">{{ $variation->estoque_atual }}</td>
-                                                <td class="px-4 py-2 text-sm">{{ $variation->estoque_minimo }}</td>
-                                                <td class="px-4 py-2 flex items-center space-x-4">
-                                                    <a href="{{ route('variations.label', $variation->id) }}" target="_blank" class="text-blue-600 hover:text-blue-900 text-sm font-semibold">Etiqueta</a>
-                                                    <button @click="isModalOpen = true; currentVariation = {{ $variation->toJson() }}" class="text-yellow-600 hover:text-yellow-900 text-sm font-semibold">Editar</button>
-                                                    <form method="POST" action="{{ route('variations.destroy', $variation->id) }}" onsubmit="return confirm('Tem certeza?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900 text-sm">Apagar</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr><td colspan="6" class="px-4 py-2 text-center text-sm">Nenhuma variação cadastrada.</td></tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                                                Nenhuma variação cadastrada.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
 
-                        <div class="mt-6 border-t pt-6 dark:border-gray-700">
-                            <h4 class="font-semibold mb-4">Adicionar Nova Variação</h4>
+                        {{-- NOVA VARIAÇÃO --}}
+                        <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="font-semibold mb-4">➕ Adicionar Nova Variação</h4>
                             @if($produto->attributes->isNotEmpty())
                                 <form method="POST" action="{{ route('variations.store', $produto->id) }}" class="space-y-4">
                                     @csrf
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         @foreach ($produto->attributes as $atributo)
                                             <div>
-                                                <label for="attribute_{{ $atributo->id }}" class="block font-medium text-sm">{{ $atributo->nome }}</label>
-                                                <select name="attribute_values[]" id="attribute_{{ $atributo->id }}" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                                <label for="attribute_{{ $atributo->id }}" class="block font-medium text-sm mb-1">{{ $atributo->nome }}</label>
+                                                <select name="attribute_values[]" id="attribute_{{ $atributo->id }}"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
                                                     <option value="">Selecione...</option>
                                                     @foreach ($atributo->valorAtributos as $valor)
                                                         <option value="{{ $valor->id }}">{{ $valor->valor }}</option>
@@ -98,176 +116,109 @@
                                             </div>
                                         @endforeach
                                     </div>
+
                                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                                        <div>
-                                            <label for="sku" class="block font-medium text-sm">SKU</label>
-                                            <input id="sku" name="sku" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
-                                        </div>
-                                        <div>
-                                            <label for="preco_custo" class="block font-medium text-sm">Preço Custo</label>
-                                            <input id="preco_custo" name="preco_custo" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                        </div>
-                                        <div>
-                                            <label for="preco_venda" class="block font-medium text-sm">Preço Venda</label>
-                                            <input id="preco_venda" name="preco_venda" type="text" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
-                                        </div>
-                                        <div>
-                                            <label for="estoque_inicial" class="block font-medium text-sm">Estoque Inicial</label>
-                                            <input id="estoque_inicial" name="estoque_inicial" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                        </div>
-                                        <div>
-                                            <label for="estoque_minimo" class="block font-medium text-sm">Estoque Mínimo</label>
-                                            <input id="estoque_minimo" name="estoque_minimo" type="number" value="0" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                        </div>
+                                        @foreach ([
+                                            'sku' => 'SKU',
+                                            'preco_custo' => 'Preço Custo',
+                                            'preco_venda' => 'Preço Venda',
+                                            'estoque_inicial' => 'Estoque Inicial',
+                                            'estoque_minimo' => 'Estoque Mínimo'
+                                        ] as $id => $label)
+                                            <div>
+                                                <label for="{{ $id }}" class="block font-medium text-sm mb-1">{{ $label }}</label>
+                                                <input id="{{ $id }}" name="{{ $id }}" type="{{ in_array($id,['estoque_inicial','estoque_minimo']) ? 'number' : 'text' }}"
+                                                       value="{{ in_array($id,['estoque_inicial','estoque_minimo']) ? 0 : '' }}"
+                                                       class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div class="flex justify-end mt-4">
-                                        <button type="submit" class="px-4 py-2 bg-green-600 rounded-md font-semibold text-xs text-white uppercase hover:bg-green-700">
+
+                                    <div class="flex justify-end gap-3">
+                                        <a href="{{ route('produtos.index') }}"
+                                        class="inline-flex items-center px-5 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md shadow-sm text-sm font-medium transition ">
+                                        ← Voltar para Produtos
+                                        </a>
+
+                                        <button type="submit"
+                                            class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm transition">
                                             Salvar Variação
                                         </button>
                                     </div>
                                 </form>
                             @else
-                                <p class="text-sm text-gray-500">Você precisa salvar pelo menos um atributo na aba "Atributos do Produto" para poder adicionar variações.</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    ⚠️ Adicione atributos na aba "Atributos do Produto" antes de criar variações.
+                                </p>
                             @endif
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div x-show="activeTab === 'gerais'" style="display: none;">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-4">Dados Gerais do Produto</h3>
-                        <form method="POST" action="{{ route('produtos.update', $produto->id) }}" class="space-y-4" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="foto" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Foto do Produto</label>
-                                    @if ($produto->foto_path)
-                                        <div class="mt-2"><img src="{{ asset('storage/' . $produto->foto_path) }}" alt="{{ $produto->nome }}" class="h-40 w-40 object-cover rounded-md"></div>
-                                    @endif
-                                    <input id="foto" name="foto" type="file" class="block mt-2 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:font-semibold file:bg-indigo-50 dark:file:bg-gray-700 file:text-indigo-700 dark:file:text-gray-300 hover:file:bg-indigo-100">
-                                </div>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="nome" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Nome do Produto</label>
-                                        <input id="nome" name="nome" type="text" value="{{ old('nome', $produto->nome) }}" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
-                                    </div>
-                                    <div>
-                                        <label for="codigo_barras" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Código de Barras</label>
-                                        <input id="codigo_barras" name="codigo_barras" type="text" value="{{ old('codigo_barras', $produto->codigo_barras) }}" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label for="categoria_id" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Categoria</label>
-                                    <select name="categoria_id" id="categoria_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
-                                        @foreach ($categorias as $categoria)
-                                            <option value="{{ $categoria->id }}" @if($categoria->id == old('categoria_id', $produto->categoria_id)) selected @endif>{{ $categoria->nome }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="marca_id" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Marca</label>
-                                    <select name="marca_id" id="marca_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700" required>
-                                        @foreach ($marcas as $marca)
-                                            <option value="{{ $marca->id }}" @if($marca->id == old('marca_id', $produto->marca_id)) selected @endif>{{ $marca->nome }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="fornecedor_id" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Fornecedor (Opcional)</label>
-                                    <select name="fornecedor_id" id="fornecedor_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                        <option value="">Selecione</option>
-                                        @foreach ($fornecedores as $fornecedor)
-                                            <option value="{{ $fornecedor->id }}" @if($fornecedor->id == old('fornecedor_id', $produto->fornecedor_id)) selected @endif>{{ $fornecedor->nome }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="descricao" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Descrição</label>
-                                <textarea id="descricao" name="descricao" rows="4" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('descricao', $produto->descricao) }}</textarea>
-                            </div>
-
-                            <div class="flex items-center justify-end mt-4 space-x-4">
-                                <button type="submit" name="action" value="save_and_back" class="px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                                    Salvar e Voltar
-                                </button>
-                                <button type="submit" name="action" value="save" class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
-                                    Salvar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {{-- TAB: DADOS GERAIS --}}
+            <div x-show="activeTab === 'gerais'" x-cloak>
+                <x-gerais-produto
+                    :produto="$produto"
+                    :categorias="$categorias"
+                    :marcas="$marcas"
+                    :fornecedores="$fornecedores"
+                />
             </div>
 
-            <div x-show="activeTab === 'atributos'" style="display: none;">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-4">Atributos do Produto</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Selecione os atributos que este produto utiliza (ex: Cor, Tamanho). Isto irá determinar quais opções estarão disponíveis para criar variações.</p>
-                        <form method="POST" action="{{ route('produtos.attributes.sync', $produto->id) }}">
-                            @csrf
-                            @method('PUT')
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                @foreach ($todosAtributos as $atributo)
-                                    <label class="flex items-center space-x-3">
-                                        <input type="checkbox" name="attributes[]" value="{{ $atributo->id }}" 
-                                               @if($produto->attributes->contains($atributo)) checked @endif
-                                               class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                        <span>{{ $atributo->nome }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                            <div class="flex items-center justify-end mt-4">
-                                <button type="submit" class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase">Salvar Atributos</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {{-- TAB: ATRIBUTOS --}}
+            <div x-show="activeTab === 'atributos'" x-cloak>
+                <x-atributos-produto
+                    :produto="$produto"
+                    :todosAtributos="$todosAtributos"
+                />
             </div>
         </div>
 
-        <div x-show="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="isModalOpen = false" style="display: none;">
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-2xl" @click.away="isModalOpen = false">
+        {{-- MODAL EDIÇÃO VARIAÇÃO --}}
+        <div x-show="isModalOpen"
+             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+             @click.self="isModalOpen = false" x-cloak>
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-2xl p-6">
                 <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Editar Variação</h3>
                 <form :action="`/variations/${currentVariation.id}`" method="POST">
-                    @csrf
-                    @method('PUT')
+                    @csrf @method('PUT')
                     <div class="space-y-4 text-gray-800 dark:text-gray-200">
                         <div>
-                            <label for="edit_sku" class="block text-sm font-medium">SKU</label>
-                            <input type="text" id="edit_sku" name="sku" x-model="currentVariation.sku" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <label class="block text-sm font-medium">SKU</label>
+                            <input type="text" name="sku" x-model="currentVariation.sku"
+                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
                         </div>
                         <div class="grid grid-cols-4 gap-4">
-                            <div>
-                                <label for="edit_preco_custo" class="block text-sm font-medium">Preço Custo</label>
-                                <input type="text" id="edit_preco_custo" name="preco_custo" x-model="currentVariation.preco_custo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                            </div>
-                            <div>
-                                <label for="edit_preco_venda" class="block text-sm font-medium">Preço Venda</label>
-                                <input type="text" id="edit_preco_venda" name="preco_venda" x-model="currentVariation.preco_venda" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                            </div>
-                            <div>
-                                <label for="edit_estoque_atual" class="block text-sm font-medium">Estoque</label>
-                                <input type="number" id="edit_estoque_atual" name="estoque_atual" x-model="currentVariation.estoque_atual" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" disabled>
-                                <p class="text-xs text-gray-500 mt-1">O stock só pode ser alterado na tela de "Movimentar Estoque".</p>
-                            </div>
-                            <div>
-                                <label for="edit_estoque_minimo" class="block text-sm font-medium">Estoque Mínimo</label>
-                                <input type="number" id="edit_estoque_minimo" name="estoque_minimo" x-model="currentVariation.estoque_minimo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                            </div>
+                            <template x-for="field in [
+                                {id:'preco_custo', label:'Preço Custo'},
+                                {id:'preco_venda', label:'Preço Venda'},
+                                {id:'estoque_atual', label:'Estoque', disabled:true},
+                                {id:'estoque_minimo', label:'Estoque Mínimo'}
+                            ]" :key="field.id">
+                                <div>
+                                    <label class="block text-sm font-medium" x-text="field.label"></label>
+                                    <input :type="field.id.includes('estoque') ? 'number':'text'"
+                                           :name="field.id" :id="`edit_${field.id}`"
+                                           x-model="currentVariation[field.id]"
+                                           :disabled="field.disabled"
+                                           class="w-full mt-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
+                                    <template x-if="field.id==='estoque_atual'">
+                                        <p class="text-xs text-gray-500 mt-1">Alteração apenas em Movimentar Estoque.</p>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
-                        <div class="flex justify-end space-x-4 mt-6">
-                            <button type="button" @click="isModalOpen = false" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-md text-sm text-gray-800 dark:text-gray-200">Cancelar</button>
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm">Salvar Alterações</button>
+
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" @click="isModalOpen = false"
+                                    class="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md text-sm font-medium">
+                                Cancelar
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">
+                                Salvar Alterações
+                            </button>
                         </div>
                     </div>
                 </form>

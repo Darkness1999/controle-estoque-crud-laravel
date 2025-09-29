@@ -67,10 +67,17 @@ class DashboardController extends Controller
         });
 
         // --- Alinhamento e Cálculo de Tendência ---
-        $labels = $saidasPorDia->pluck('data')->merge($entradasPorDia->pluck('data'))->unique()->sort();
+        $labels = $saidasPorDia->pluck('data')
+            ->merge($entradasPorDia->pluck('data'))
+            ->unique()
+            ->sort()
+            ->values();
+
         $dataSaidas = $labels->map(fn ($label) => $saidasPorDia->firstWhere('data', $label)->total ?? 0);
+
         $dataEntradas = $labels->map(fn ($label) => $entradasPorDia->firstWhere('data', $label)->total ?? 0);
-        $labelsFormatados = $labels->map(fn ($date) => Carbon::parse($date)->format('d/m'))->values()->all();
+
+        $labelsFormatados = $labels->map(fn ($date) => Carbon::parse($date)->format('d/m'));
         
         $totalSaidasAtual = $dataSaidas->sum();
         $tendenciaSaidas = Cache::remember('dashboard_tendencia_saidas' . $cacheKeyPeriodo, now()->addMinutes(10), function () use ($startDate, $totalSaidasAtual) {

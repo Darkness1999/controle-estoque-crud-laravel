@@ -11,7 +11,7 @@ class ValorAtributoController extends Controller
     public function index(Atributo $atributo)
     {
         // Usando o relacionamento para buscar apenas os filhos do pai
-        $valores = $atributo->valorAtributos()->latest()->get();
+        $valores = $atributo->valorAtributos()->latest()->paginate(10);
         return view('valores.index', compact('atributo', 'valores'));
     }
 

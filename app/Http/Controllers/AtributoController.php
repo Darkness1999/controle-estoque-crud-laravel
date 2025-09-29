@@ -9,7 +9,7 @@ class AtributoController extends Controller
 {
     public function index()
     {
-        $atributos = Atributo::latest()->get();
+        $atributos = Atributo::latest()->paginate(10);
         return view('atributos.index', compact('atributos'));
     }
 

@@ -6,7 +6,7 @@
             </h2>
             <a href="{{ route('dashboard') }}"
                class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-sm transition">
-                ← Voltar ao Dashboard
+                Voltar ao Dashboard
             </a>
         </div>
     </x-slot>

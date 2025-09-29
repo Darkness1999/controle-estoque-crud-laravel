@@ -12,7 +12,7 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        $marcas = Marca::latest()->get();
+        $marcas = Marca::latest()->paginate(10); 
         return view('marcas.index', compact('marcas'));
     }
 

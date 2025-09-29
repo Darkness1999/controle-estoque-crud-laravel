@@ -130,7 +130,7 @@ Antes de começar, garanta que tem as seguintes ferramentas instaladas e a funci
 - **Um cliente de banco de dados:** (ex: **DBeaver** ou similar).
 
 > **⚠️ Importante: Configuração do PHP**
-> Após instalar o PHP, você precisa de editar o arquivo de configuração `php.ini`. Lembre-se dos erros que enfrentámos! Garanta que as seguintes extensões estão ativadas (removendo o `;` do início da linha):
+> Após instalar o PHP, você precisa de editar o arquivo de configuração `php.ini`. Garanta que as seguintes extensões estão ativadas (removendo o `;` do início da linha):
 > ```ini
 > extension=gd
 > extension=pgsql

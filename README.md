@@ -1,6 +1,5 @@
-<h1 align="center">
-  📦 Controle de Estoque - Uma Aplicação Web Robusta com Laravel
-</h1>
+# 📦 Controle de Estoque - Uma Aplicação Web Robusta com Laravel
+
 
 ![Status](https://img.shields.io/badge/status-Projeto%20em%20constru%C3%A7%C3%A3o-orange?style=for-the-badge)
 
@@ -50,7 +49,7 @@ O sistema conta com um ecossistema completo de funcionalidades para uma gestão 
 ```mermaid
 flowchart TD
     subgraph "Interface Web (Navegador)"
-        U[Utilizador] --> W[Rotas Web]
+        U[Usuário] --> W[Rotas Web]
         W --> C[Controllers Web]
         C --> V[Views Blade<br/>Tailwind + Alpine.js]
         C <--> L[Lógica de Negócio / Models]
@@ -69,19 +68,7 @@ flowchart TD
 ```
 
 ### 📦 Gestão de Produtos e Variações
-Cadastro de produtos com um sistema robusto de variações (SKUs), permitindo que cada combinação de atributos (ex: Cor, Tamanho) tenha seu próprio preço, stock mínimo e histórico.
-
-<details>
-  <summary>🖼️ CLIQUE AQUI PARA VISUALIZAR..</summary>
-
-  ![Tela ](resources/img/tela-edit-info-produtos.png)
-#
-  ![Tela ](resources/img/tela-cad-produtos.png)
-#
-  ![Tela ](resources/img/tela-variacoes-produtos.png)
-#
-  ![Tela ](resources/img/tela-cad-atributos-produtos.png)
-</details>
+Cadastro de produtos com um sistema robusto de variações (SKUs), permitindo que cada combinação de atributos (ex: Cor, Tamanho), tenha seu próprio preço, stock mínimo e histórico, mais impressão de etiquetas dos produtos.
 
 ### 📈 Controle de Lotes e Validade
 Toda a entrada de stock é gerida por lotes com data de validade. As saídas seguem a lógica **FEFO (First-Expire, First-Out)**, garantindo a rotação inteligente do stock e minimizando perdas.
@@ -89,26 +76,10 @@ Toda a entrada de stock é gerida por lotes com data de validade. As saídas seg
 ### 🚚 Movimentação e Rastreabilidade
 Interface otimizada para registo de entradas e saídas, com suporte a **leitores de código de barras** e associação a **Clientes** e **Fornecedores**, garantindo um histórico de movimentações 100% auditável.
 
-<details>
-  <summary>🖼️ CLIQUE AQUI PARA VISUALIZAR..</summary>
-
-  ![Tela ](resources/img/tela-movimentacao-estoque.png)
-#
-  ![Tela ](resources/img/tela-movimentacao-estoque2.png)
-</details>
-
 ### 📊 Dashboards e Relatórios
 - **Dashboard de BI:** Uma visão centralizada com KPIs, tendências, gráficos clicáveis (drill-down) e listas de ação (alertas de stock baixo, produtos parados).
 - **Dashboard de Vendas Interativo:** Ferramenta de análise de vendas com busca dinâmica de produtos e atualização de gráficos em tempo real via AJAX.
 - **Relatório de Histórico:** Consulta detalhada de todas as movimentações, com filtros avançados.
-
-<details>
-  <summary>🖼️ CLIQUE AQUI PARA VISUALIZAR..</summary>
-
-  ![Tela ](resources/img/tela-dashboard-principal.png)
-#
-  ![Tela ](resources/img/tela-dashboard-principal2.png)
-</details>
 
 ### 🤖 Automação e Alertas
 Sistema proativo que monitoriza o stock e envia **notificações automáticas por e-mail** para os administradores quando um item atinge o seu nível mínimo.
@@ -124,6 +95,42 @@ Sistema proativo que monitoriza o stock e envia **notificações automáticas po
 - **Login/Logout seguro** com hashing de senhas via **bcrypt**.  
 - **Sessões criptografadas** em PostgreSQL/Redis.  
 - **Expiração automática de sessão** configurável. 
+
+---
+
+## 🎥 Demonstração das Telas do Projeto
+
+### 🔐 Autenticação
+Fluxo de login, registro e atribuição automática de papel de usuário.  
+![Login](resources/gifs/login.gif) ---**EM BREVE**---
+
+### 📊 Dashboard
+Visão geral do estoque, KPIs e gráficos interativos.  
+![Dashboard](resources/gifs/dashboard.gif) ---**EM BREVE**---
+
+### 📦 Gestão de Produtos e Variações
+Cadastro, edição, exclusão e impressão de etiquetas.  
+![Produtos](resources/gifs/produtos.gif) ---**EM BREVE**---
+
+### 📥 Movimentações de Estoque
+Entradas e saídas com lógica FEFO e rastreabilidade por lotes.  
+![Estoque](resources/gifs/estoque.gif) ---**EM BREVE**---
+
+### 🏢 Gestão de Fornecedores
+Gerenciamento completo da base de fornecedores.  
+![Fornecedores](resources/gifs/fornecedores.gif) ---**EM BREVE**---
+
+### 👥 Gestão de Clientes
+Gerenciamento completo da base de clientes.  
+![Clientes](resources/gifs/clientes.gif) ---**EM BREVE**---
+
+### 🔑 Gestão de Usuários e Permissões
+Alteração de papéis entre **Administrador** e **Operador**.  
+![Usuários](resources/gifs/usuarios.gif) ---**EM BREVE**---
+
+### ⚠️ Cadastros gerais (Categorias, Marcas, Atributos(Gerenciar Valores))
+Cadastro, edição e exclusão de dados.  
+![Cadastros](resources/gifs/alertas.gif) ---**EM BREVE**---
 
 ---
 
@@ -210,7 +217,7 @@ Antes de começar, garanta que tem as seguintes ferramentas instaladas e a funci
     DB_HOST=127.0.0.1
     DB_PORT=5432
     DB_DATABASE=controle_estoque_db # O nome que você criou no Passo 1
-    DB_USERNAME=seu_usuario_db      # O seu utilizador do PostgreSQL
+    DB_USERNAME=seu_usuario_db      # O seu usuário do PostgreSQL
     DB_PASSWORD=sua_senha_db        # A sua senha do PostgreSQL
     ```
 
@@ -255,21 +262,21 @@ A aplicação estará agora disponível em `http://127.0.0.1:8000`.
 
 ## 👨‍💻 Como Utilizar
 
-### Criando o Primeiro Utilizador (Administrador)
+### Criando o Primeiro Usuário (Administrador)
 
 O sistema foi projetado para ser auto-configurável na primeira utilização.
 
-1.  **Aceda à aplicação** no seu navegador (`http://127.0.0.1:8000`). Você será redirecionado para a página de login.
-2.  Clique no link **"Registar"**.
+1.  **Acesse à aplicação** no seu navegador (`http://127.0.0.1:8000`). Você será redirecionado para a página de login.
+2.  Clique no link **"Cadastrar"**.
 3.  Preencha os seus dados para criar a sua conta.
-4.  **Parabéns!** Como você é o primeiro utilizador a ser registado, o sistema atribuiu-lhe automaticamente a função de **Administrador (`admin`)**. Isto dá-lhe acesso a todas as áreas, incluindo a "Gestão de Utilizadores".
+4.  **Parabéns!** Como você é o primeiro usuário a ser registado, o sistema atribuiu-lhe automaticamente a função de **Administrador (`admin`)**. Isto dá-lhe acesso a todas as áreas, incluindo a "Gestão de Usuários".
 
-Qualquer outra pessoa que se registar a partir de agora será um "Operador" por padrão. Você pode promover outros utilizadores a `admin` na página "Utilizadores".
+Qualquer outra pessoa que se cadastrar a partir de agora será um "Operador" por padrão. Você pode promover outros usuários a `admin` na página "Usuários".
 
 ### Populando o Banco com Dados de Teste (Opcional, mas Recomendado)
 Se desejar testar a aplicação com um grande volume de dados (produtos, vendas, etc.), você pode executar o "Seeder".
 
-> **Atenção:** Execute este comando **depois** de já ter criado o seu utilizador admin.
+> **Atenção:** Execute este comando **depois** de já ter criado o seu usuário admin.
 ```bash
 php artisan db:seed
 ```
@@ -287,10 +294,10 @@ Todos os endpoints protegidos requerem autenticação via **Bearer Token** e o e
 
 ##### Obter Token de Acesso
 * **Endpoint:** `POST /api/login`
-* **Descrição:** Autentica um utilizador com email e senha e retorna um token de acesso Sanctum. Este token deve ser guardado pela aplicação cliente e enviado em todas as requisições subsequentes.
+* **Descrição:** Autentica um usuários com email e senha e retorna um token de acesso Sanctum. Este token deve ser guardado pela aplicação cliente e enviado em todas as requisições subsequentes.
 * **Corpo da Requisição (`x-www-form-urlencoded`):**
-    * `email` (string, obrigatório): O email do utilizador.
-    * `password` (string, obrigatório): A senha do utilizador.
+    * `email` (string, obrigatório): O email do usuários.
+    * `password` (string, obrigatório): A senha do usuários.
 * **Resposta de Sucesso (200 OK):**
     ```json
     {

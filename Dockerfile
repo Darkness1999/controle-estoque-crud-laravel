@@ -21,9 +21,11 @@ WORKDIR /var/www/html
 # Copiar os arquivos da aplicação
 COPY . .
 
-# Dar permissões à pasta de storage
+# Configurar o servidor Apache para apontar para a pasta public do Laravel
+RUN mv /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/000-default.conf.bak
+COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN a2enmod rewrite
+
+# Dar as permissões corretas para o Laravel escrever nas pastas de storage e cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Expor a porta 80
-EXPOSE 80

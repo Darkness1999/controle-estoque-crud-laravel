@@ -67,8 +67,6 @@ services:
     name: controle-estoque-db
     env: postgres
     plan: free
-    # A versão do PostgreSQL é definida aqui para o tipo 'pserv'
-    postgresMajorVersion: 17
 
 # --- Cron Job para o Agendador (COMENTADO - REQUER PLANO PAGO) ---
 # Se no futuro você fizer upgrade do seu plano na Render,

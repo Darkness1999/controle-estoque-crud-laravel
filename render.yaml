@@ -1,8 +1,8 @@
 services:
-  # --- Web App Laravel (usa Dockerfile) ---
+  # --- Serviço Web (Laravel usando Dockerfile) ---
   - type: web
     name: controle-estoque-app
-    env: docker
+    env: docker Dockerfile
     plan: free
     buildCommand: |
       composer install --no-dev --optimize-autoloader \
@@ -20,19 +20,6 @@ services:
         value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI=
       - key: APP_DEBUG
         value: false
-      # >>> Preencha manualmente no painel da Render <<<
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        value: your-db-host.render.com
-      - key: DB_PORT
-        value: "5432"
-      - key: DB_DATABASE
-        value: your_db_name
-      - key: DB_USERNAME
-        value: your_db_user
-      - key: DB_PASSWORD
-        value: your_db_password
 
   # --- Banco de Dados PostgreSQL ---
   - type: pserv
@@ -52,15 +39,3 @@ services:
         sleep 60
       done
     envVars:
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        value: your-db-host.render.com
-      - key: DB_PORT
-        value: "5432"
-      - key: DB_DATABASE
-        value: your_db_name
-      - key: DB_USERNAME
-        value: your_db_user
-      - key: DB_PASSWORD
-        value: your_db_password

@@ -1,41 +1,56 @@
+# Arquivo de configuração "Blueprint" para a plataforma Render
+# Documentação: https://render.com/docs/blueprint-spec
+
+# Define a versão do blueprint
+version: 1
+
+# --- Definição dos Serviços ---
 services:
   # --- Serviço Web Principal (Sua Aplicação Laravel) ---
   - type: web
     name: controle-estoque-app
+    # Ambiente de execução. 'php' é o correto para Laravel.
     env: php
+    # Plano de instância. 'free' para o nível gratuito.
     plan: free
-    buildCommand: "composer install && npm install && npm run build && php artisan migrate:fresh --seed && php artisan storage:link"
+    # Comandos a serem executados durante a fase de construção (deploy).
+    buildCommand: "composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan storage:link && php artisan migrate --force"
+    # Comando para iniciar a aplicação.
     startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
+    # Caminho para verificação de saúde, para a Render saber que a app está online.
+    healthCheckPath: /
+    # Variáveis de ambiente
     envVars:
-      - key: PHP_VERSION
-        value: '8.2'
-      - key: APP_NAME
-        value: "Controle de Estoque"
-      - key: APP_ENV
-        value: production
       - key: APP_KEY
-        value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI=
-      - key: APP_DEBUG
-        value: false
+        # Diz à Render para gerar uma chave segura automaticamente.
+        generateValue: true
       - key: APP_URL
+        # Pega a URL pública gerada pela Render automaticamente.
         fromService:
           type: web
           name: controle-estoque-app
           property: url
-      - key: LOG_CHANNEL
-        value: stderr
       - key: DATABASE_URL
+        # Pega a string de conexão do nosso serviço de banco de dados.
         fromService:
           type: pserv
           name: controle-estoque-db
           property: connectionString
+      - key: PHP_VERSION
+        value: 8.2
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
       - key: SESSION_DRIVER
         value: database
       - key: QUEUE_CONNECTION
         value: database
       - key: CACHE_STORE
         value: database
-      # --- Variáveis do Mailtrap ---
+      # --- Cole as suas variáveis do Mailtrap aqui ---
       - key: MAIL_MAILER
         value: smtp
       - key: MAIL_HOST
@@ -43,25 +58,24 @@ services:
       - key: MAIL_PORT
         value: 2525
       - key: MAIL_USERNAME
-        value: e8afe66f633fdc
+        value: e8afe66f633fdc # Substitua se for diferente
       - key: MAIL_PASSWORD
-        value: 15da2ec7882cbc
-      - key: MAIL_ENCRYPTION
-        value: tls
-      - key: MAIL_FROM_ADDRESS
-        value: "alertas@estoque.com"
-      - key: MAIL_FROM_NAME
-        value: "Controle de Estoque"
+        value: 15da2ec7882cbc # Substitua se for diferente
 
   # --- Banco de Dados PostgreSQL ---
   - type: pserv
     name: controle-estoque-db
     env: postgres
     plan: free
+    # A versão do PostgreSQL é definida aqui para o tipo 'pserv'
+    postgresMajorVersion: 17
 
-  # --- Cron Job para o Agendador ---
-  - type: cron
-    name: laravel-scheduler
-    plan: free
-    env: php
-    schedule: "* * * * *"
+# --- Cron Job para o Agendador (COMENTADO - REQUER PLANO PAGO) ---
+# Se no futuro você fizer upgrade do seu plano na Render,
+# basta remover o '#' das linhas abaixo e fazer um novo deploy.
+#  - type: cron
+#    name: laravel-scheduler
+#    env: php
+#    plan: starter # 'starter' é o plano pago mais barato
+#    schedule: "* * * * *" # A cada minuto
+#    command: "php artisan schedule:run"

@@ -1,41 +1,41 @@
 services:
-  # --- Serviço Web (Laravel usando Dockerfile) ---
+  # --- Aplicação Laravel (Docker) ---
   - type: web
     name: controle-estoque-app
-    env: docker Dockerfile
+    env: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader \
-      && npm install \
-      && npm run build \
-      && php artisan storage:link \
-      && php artisan migrate --force
-    healthCheckPath: /
+    branch: main
+    autoDeploy: true
     envVars:
-      - key: APP_NAME
-        value: "Controle de Estoque"
       - key: APP_ENV
         value: production
       - key: APP_KEY
-        value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI=
+        generateValue: true
       - key: APP_DEBUG
         value: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: controle-estoque-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: controle-estoque-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: controle-estoque-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: controle-estoque-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: controle-estoque-db
+          property: password
 
-  # --- Banco de Dados PostgreSQL ---
-  - type: pserv
-    name: controle-estoque-db
-    env: postgres
+databases:
+  - name: controle-estoque-db
     plan: free
-
-  # --- Worker para Scheduler ---
-  - type: worker
-    name: laravel-scheduler
-    env: docker
-    plan: free
-    buildCommand: ""
-    startCommand: |
-      while true; do
-        php artisan schedule:run
-        sleep 60
-      done
-    envVars:

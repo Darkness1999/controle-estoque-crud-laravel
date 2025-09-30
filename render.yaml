@@ -125,7 +125,6 @@ services:
     name: controle-estoque-db
     env: postgres
     plan: free
-    postgresVersion: 17
 
   # --- Cron Job para o Agendador ---
   - type: worker

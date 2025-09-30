@@ -65,4 +65,3 @@ services:
     plan: free
     env: php
     schedule: "* * * * *"
-    command: "php artisan schedule:run"

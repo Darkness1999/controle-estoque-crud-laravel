@@ -18,7 +18,7 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_KEY
-        value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI=
+        generateValue: true
       - key: APP_DEBUG
         value: false
       - key: APP_URL
@@ -125,12 +125,21 @@ services:
     name: controle-estoque-db
     env: postgres
     plan: free
-    postgresMajorVersion: 17
+    postgresVersion: 17
 
   # --- Cron Job para o Agendador ---
-  - type: cron
+  - type: worker
     name: laravel-scheduler
     env: docker
     plan: free
-    schedule: "* * * * *"
-    command: "php artisan schedule:run"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: controle-estoque-db
+          property: connectionString
+    startCommand: |
+      while true; do
+        php artisan schedule:run
+        sleep 60
+      done

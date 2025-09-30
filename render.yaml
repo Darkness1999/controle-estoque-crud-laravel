@@ -1,7 +1,7 @@
 services:
-  # --- Serviço Web Principal (Laravel + Docker) ---
+  # --- Web App Laravel (usa Dockerfile) ---
   - type: web
-    name: controle-estoque
+    name: controle-estoque-app
     env: docker
     plan: free
     buildCommand: |
@@ -12,113 +12,27 @@ services:
       && php artisan migrate --force
     healthCheckPath: /
     envVars:
-      # --- Configuração da aplicação ---
       - key: APP_NAME
         value: "Controle de Estoque"
       - key: APP_ENV
         value: production
       - key: APP_KEY
-        generateValue: true
+        value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI=
       - key: APP_DEBUG
         value: false
-      - key: APP_URL
-        fromService:
-          type: web
-          name: controle-estoque-app
-          property: url
-      - key: APP_LOCALE
-        value: en
-      - key: APP_FALLBACK_LOCALE
-        value: en
-      - key: APP_FAKER_LOCALE
-        value: en_US
-      - key: APP_MAINTENANCE_DRIVER
-        value: file
-      - key: PHP_CLI_SERVER_WORKERS
-        value: "4"
-      - key: BCRYPT_ROUNDS
-        value: "12"
-      - key: LOG_CHANNEL
-        value: stack
-      - key: LOG_STACK
-        value: single
-      - key: LOG_DEPRECATIONS_CHANNEL
-        value: null
-      - key: LOG_LEVEL
-        value: debug
-
-      # --- Banco de Dados ---
+      # >>> Preencha manualmente no painel da Render <<<
       - key: DB_CONNECTION
         value: pgsql
-      - key: DATABASE_URL
-        fromService:
-          type: pserv
-          name: controle-estoque-db
-          property: connectionString
-
-      # --- Sessão e Cache ---
-      - key: SESSION_DRIVER
-        value: database
-      - key: SESSION_LIFETIME
-        value: "120"
-      - key: SESSION_ENCRYPT
-        value: "false"
-      - key: SESSION_PATH
-        value: /
-      - key: SESSION_DOMAIN
-        value: null
-      - key: BROADCAST_CONNECTION
-        value: log
-      - key: FILESYSTEM_DISK
-        value: local
-      - key: QUEUE_CONNECTION
-        value: database
-      - key: CACHE_STORE
-        value: database
-      - key: MEMCACHED_HOST
-        value: 127.0.0.1
-      - key: REDIS_CLIENT
-        value: phpredis
-      - key: REDIS_HOST
-        value: 127.0.0.1
-      - key: REDIS_PASSWORD
-        value: null
-      - key: REDIS_PORT
-        value: "6379"
-
-      # --- E-mail (Mailtrap) ---
-      - key: MAIL_MAILER
-        value: smtp
-      - key: MAIL_HOST
-        value: sandbox.smtp.mailtrap.io
-      - key: MAIL_PORT
-        value: "2525"
-      - key: MAIL_USERNAME
-        value: e8afe66f633fdc
-      - key: MAIL_PASSWORD
-        value: 15da2ec7882cbc
-      - key: MAIL_ENCRYPTION
-        value: tls
-      - key: MAIL_FROM_ADDRESS
-        value: "alertas@estoque.com"
-      - key: MAIL_FROM_NAME
-        value: "Controle de Estoque"
-
-      # --- AWS (caso use) ---
-      - key: AWS_ACCESS_KEY_ID
-        value: ""
-      - key: AWS_SECRET_ACCESS_KEY
-        value: ""
-      - key: AWS_DEFAULT_REGION
-        value: us-east-1
-      - key: AWS_BUCKET
-        value: ""
-      - key: AWS_USE_PATH_STYLE_ENDPOINT
-        value: "false"
-
-      # --- Vite ---
-      - key: VITE_APP_NAME
-        value: "Controle de Estoque"
+      - key: DB_HOST
+        value: your-db-host.render.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: your_db_name
+      - key: DB_USERNAME
+        value: your_db_user
+      - key: DB_PASSWORD
+        value: your_db_password
 
   # --- Banco de Dados PostgreSQL ---
   - type: pserv
@@ -126,19 +40,27 @@ services:
     env: postgres
     plan: free
 
-  # --- Cron Job para o Agendador ---
+  # --- Worker para Scheduler ---
   - type: worker
     name: laravel-scheduler
     env: docker
     plan: free
-    envVars:
-      - key: DATABASE_URL
-        fromService:
-          type: pserv
-          name: controle-estoque-db
-          property: connectionString
+    buildCommand: ""
     startCommand: |
       while true; do
         php artisan schedule:run
         sleep 60
       done
+    envVars:
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: your-db-host.render.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: your_db_name
+      - key: DB_USERNAME
+        value: your_db_user
+      - key: DB_PASSWORD
+        value: your_db_password

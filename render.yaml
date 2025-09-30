@@ -1,0 +1,54 @@
+services:
+  # --- Serviço Web Principal (Sua Aplicação Laravel) ---
+  - type: web
+    name: controle-estoque-app
+    env: php
+    phpVersion: '8.2' # Define a versão do PHP explicitamente
+    plan: free
+    buildCommand: "composer install && npm install && npm run build"
+    startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: APP_KEY
+        # Gere uma nova chave com `php artisan key:generate` e cole-a aqui
+        value: base64:iz4lv8GTwGcEEwoTvhJ6q5QSrr/pDa4UjmdZHFnD5jI= 
+      - key: APP_URL
+        fromService:
+          type: web
+          name: controle-estoque-app
+          property: url
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: controle-estoque-db # O nome que demos ao nosso banco
+          property: connectionString
+      # --- Adicione as suas variáveis do Mailtrap aqui ---
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: sandbox.smtp.mailtrap.io
+      - key: MAIL_PORT
+        value: 2525
+      - key: MAIL_USERNAME
+        value: SEU_USERNAME_MAILTRAP
+      - key: MAIL_PASSWORD
+        value: SUA_PASSWORD_MAILTRAP
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+
+  # --- Banco de Dados PostgreSQL ---
+  - type: pserv
+    name: controle-estoque-db
+    env: postgres
+    plan: free
+    postgresMajorVersion: 14
+
+  # --- Cron Job para o Agendador ---
+  - type: cron
+    name: laravel-scheduler
+    schedule: "* * * * *" # A cada minuto
+    command: "php artisan schedule:run"
+    plan: free

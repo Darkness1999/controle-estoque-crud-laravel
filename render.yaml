@@ -58,11 +58,11 @@ services:
     name: controle-estoque-db
     env: postgres
     plan: free
-    postgresMajorVersion: 14
+    postgresMajorVersion: 17
 
   # --- Cron Job para o Agendador ---
   - type: cron
     name: laravel-scheduler
-    schedule: "* * * * *" # A cada minuto
+    schedule: "* * * * *"
     command: "php artisan schedule:run"
     plan: free

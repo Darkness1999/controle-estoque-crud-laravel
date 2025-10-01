@@ -283,54 +283,148 @@ php artisan db:seed
 
 > **Atenção:** Isto irá popular o banco de dados com dezenas de produtos, categorias, clientes, fornecedores e movimentações de teste, permitindo-lhe explorar os dashboards e relatórios em condições realistas.
 
-### Documentação dos Endpoints da API
+### 📦 Documentação dos Endpoints da API
 
-A API foi projetada para ser a ponte entre o núcleo de negócio e sistemas externos, como aplicativos mobile ou e-commerce. Todos os endpoints protegidos utilizam **autenticação via Bearer Token**.
+Esta API permite a integração com sistemas externos, aplicativos mobile ou e-commerce, garantindo acesso seguro aos dados do estoque, produtos, variações e movimentações.
 
-### 📌 Uso via Postman (recomendado)
+Todos os endpoints protegidos requerem autenticação via **Bearer Token** e o cabeçalho **`Accept: application/json`**.
 
-Não precisa criar manualmente endpoints ou payloads. Basta importar a coleção Postman pronta.
+---
 
-#### **Como usar**
+## ⚡ Passo a Passo Rápido com Postman
+
+Este guia foi feito para que qualquer pessoa, mesmo sem experiência, consiga testar a API usando o Postman.
+
+---
+
+### 1️⃣ Importar a Coleção no Postman
 
 1. Abra o Postman.
-2. Clique em **Import** → selecione o arquivo `EndPoints-Controle-de-Estoque-API.postman_collection`. Que está na pasta raiz do projeto.
-3. Configure a variável `base_url` caso a API não esteja em `http://localhost:8000`.
-   - Exemplo: `https://meuapp.render.com`
-4. Faça login usando o endpoint `POST /api/login` para obter seu **Bearer Token**.
-5. Copie o token e cole na variável `token` da coleção.
-6. Todos os endpoints agora estão prontos para uso.
+2. Clique em **File → Import**.
+3. Selecione o arquivo da coleção JSON (fornecido junto com o projeto, na pasta raiz, chamado: **EndPoints-Controle-de-Estoque-API.postman_collection**).
+4. Clique em **Import**.
 
-#### **Endpoints disponíveis**
+> Após a importação, você verá todos os endpoints organizados em pastas, com exemplos de requisições já configurados.
 
-- **Autenticação**
-  - `POST /api/login` → obtém token de acesso
+---
 
-- **Produtos**
-  - `GET /api/produtos`
-  - `POST /api/produtos`
-  - `GET /api/produtos/{id}`
-  - `PUT /api/produtos/{id}`
-  - `DELETE /api/produtos/{id}`
+### 2️⃣ Configurar o Ambiente (`{{base_url}}` e `{{token}}`)
 
-- **Variações de Produto**
-  - `POST /api/produtos/{id}/variations`
-  - `PUT /api/variations/{id}`
-  - `DELETE /api/variations/{id}`
+1. No Postman, clique no ícone **Environment** (canto superior direito) → **Manage Environments** → **Add**.
+2. Crie um ambiente chamado, por exemplo, `ControleEstoque`.
+3. Adicione as seguintes variáveis:
 
-- **Movimentações de Estoque**
-  - `POST /api/movimentacoes`
+| Nome       | Initial Value                        | Current Value                | Descrição                                                         |
+| ---------- | ------------------------------------ | ---------------------------- | ----------------------------------------------------------------- |
+| `base_url` | `http://localhost:8000` (ou sua URL) | mesmo valor do Initial Value | URL base da API. Todas as requisições usam `{{base_url}}`.        |
+| `token`    | deixar vazio                         | deixar vazio                 | Token gerado pelo login. Deve ser atualizado antes de cada teste. |
 
-- **Busca**
-  - `GET /api/search-by-code/{code}`
+4. Salve o ambiente.
+5. No canto superior direito do Postman, selecione o ambiente `ControleEstoque`.
 
-- **Dados Mestres (somente leitura)**
-  - `GET /api/categorias`
-  - `GET /api/marcas`
-  - `GET /api/clientes`
-  - `GET /api/fornecedores`
+> **Importante:** Sempre que você usar `{{base_url}}` na URL, o Postman irá substituir pelo valor definido no ambiente.
+> O `{{token}}` será usado automaticamente nos headers de endpoints protegidos.
 
-> Todos os endpoints protegidos já vêm configurados para usar o **token via Bearer**.
+---
+
+### 3️⃣ Obter Token de Acesso
+
+1. Abra a pasta **Autenticação** → endpoint `POST /api/login`.
+2. Clique em **Body → x-www-form-urlencoded** e preencha:
+
+```
+email: seu_email@example.com
+password: sua_senha
+```
+
+3. Clique em **Send**.
+4. Na resposta, copie o valor de `access_token`.
+5. Volte para **Environment → Edit**, cole o token na variável `token`.
+6. Salve o ambiente.
+
+> ⚠️ **Atenção:** O token expira após certo período (configuração do backend). Se algum endpoint retornar `401 Unauthorized`, será necessário gerar um novo token seguindo o mesmo passo.
+
+---
+
+### 4️⃣ Testando Endpoints
+
+> **Dica:** Antes de testar qualquer endpoint protegido, certifique-se de que:
+>
+> 1. O Environment `ControleEstoque` está ativo.
+> 2. A variável `token` contém o valor do último login.
+> 3. A URL base (`{{base_url}}`) está correta para seu ambiente local ou servidor.
+
+---
+
+#### **Produtos**
+
+* `GET /api/produtos` → lista todos os produtos.
+* `POST /api/produtos` → cria novo produto:
+
+  * Campos obrigatórios: `nome`, `categoria_id`, `marca_id`
+  * Campos opcionais: `descricao`, `fornecedor_id`, `codigo_barras`
+* `GET /api/produtos/{id}` → detalhes de um produto.
+* `PUT /api/produtos/{id}` → atualizar produto existente.
+* `DELETE /api/produtos/{id}` → Soft Delete.
+
+> ⚠️ **Todos os endpoints de produtos exigem token válido."
+
+---
+
+#### **Variações de Produto**
+
+* `POST /api/produtos/{id}/variations` → criar variação:
+
+  * Campos obrigatórios: `sku`, `preco_venda`, `attribute_values[]`
+  * Campos opcionais: `preco_custo`, `estoque_minimo`
+* `PUT /api/variations/{id}` → atualizar variação existente.
+* `DELETE /api/variations/{id}` → Soft Delete.
+
+> Cada variação também requer token válido. Para cada requisição protegida, use sempre o token atualizado.
+
+---
+
+#### **Movimentações de Estoque**
+
+* `POST /api/movimentacoes` → registrar entrada ou saída:
+
+  * Campos obrigatórios: `product_variation_id`, `tipo` (`entrada` ou `saida`), `quantidade`
+  * Campos opcionais: `motivo`, `fornecedor_id`, `cliente_id`, `lote`, `data_validade`
+> ⚠️ **Importante:** Cada movimentação verifica regras de negócio internas, como FEFO para saídas.
+
+---
+
+#### **Busca**
+
+* `GET /api/search-by-code/{code}` → busca variação por SKU ou código de barras.
+* Resposta de falha 404:
+
+```json
+{
+  "message": "Nenhum produto ou variação encontrado com este código."
+}
+```
+
+---
+
+#### **Dados Mestres (Somente Leitura)**
+
+* `GET /api/categorias`
+* `GET /api/marcas`
+* `GET /api/clientes`
+* `GET /api/fornecedores`
+
+> Estes endpoints são públicos, mas ainda requerem `Bearer Token` para consistência.
+
+---
+
+### 5️⃣ Observações Finais
+
+* Sempre use o Environment para evitar substituir URLs ou tokens manualmente.
+* Cada token gerado via login deve ser atualizado no `{{token}}` antes de usar qualquer endpoint protegido.
+* Se a API estiver hospedada em outro servidor, altere `base_url` para refletir a URL correta.
+* O Postman facilita testes e simula qualquer integração com front-end, mobile ou outros sistemas.
+* Para endpoints que criam ou alteram dados, teste sempre com cuidado em ambientes de desenvolvimento.
 
 ---
 

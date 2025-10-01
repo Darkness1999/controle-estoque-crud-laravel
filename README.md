@@ -285,115 +285,52 @@ php artisan db:seed
 
 ### Documentação dos Endpoints da API
 
-A API foi projetada para ser a ponte entre o núcleo de negócio e o mundo exterior, como um futuro aplicativo mobile ou uma integração com e-commerce. Ela permite que sistemas externos interajam com os dados de forma segura e programática.
+A API foi projetada para ser a ponte entre o núcleo de negócio e sistemas externos, como aplicativos mobile ou e-commerce. Todos os endpoints protegidos utilizam **autenticação via Bearer Token**.
 
-Todos os endpoints protegidos requerem autenticação via **Bearer Token** e o envio do cabeçalho **`Accept: application/json`**.
+### 📌 Uso via Postman (recomendado)
 
----
-#### **Autenticação**
+Não precisa criar manualmente endpoints ou payloads. Basta importar a coleção Postman pronta.
 
-##### Obter Token de Acesso
-* **Endpoint:** `POST /api/login`
-* **Descrição:** Autentica um usuários com email e senha e retorna um token de acesso Sanctum. Este token deve ser guardado pela aplicação cliente e enviado em todas as requisições subsequentes.
-* **Corpo da Requisição (`x-www-form-urlencoded`):**
-    * `email` (string, obrigatório): O email do usuários.
-    * `password` (string, obrigatório): A senha do usuários.
-* **Resposta de Sucesso (200 OK):**
-    ```json
-    {
-        "access_token": "4|aBcDeFgHiJKLmnoPqRsTuvWxyz...",
-        "token_type": "Bearer"
-    }
-    ```
+#### **Como usar**
 
----
-#### **Produtos**
+1. Abra o Postman.
+2. Clique em **Import** → selecione o arquivo `EndPoints-Controle-de-Estoque-API.postman_collection`. Que está na pasta raiz do projeto.
+3. Configure a variável `base_url` caso a API não esteja em `http://localhost:8000`.
+   - Exemplo: `https://meuapp.render.com`
+4. Faça login usando o endpoint `POST /api/login` para obter seu **Bearer Token**.
+5. Copie o token e cole na variável `token` da coleção.
+6. Todos os endpoints agora estão prontos para uso.
 
-##### Listar Produtos
-* **Endpoint:** `GET /api/produtos`
-* **Descrição:** Retorna uma lista paginada de todos os produtos base.
+#### **Endpoints disponíveis**
 
-##### Criar um Novo Produto
-* **Endpoint:** `POST /api/produtos`
-* **Descrição:** Cria um novo registo de produto base.
-* **Corpo da Requisição (`x-www-form-urlencoded`):**
-    * `nome` (string, obrigatório)
-    * `categoria_id` (integer, obrigatório)
-    * `marca_id` (integer, obrigatório)
-    * `descricao` (string, opcional)
-    * `fornecedor_id` (integer, opcional)
-    * `codigo_barras` (string, opcional, único)
+- **Autenticação**
+  - `POST /api/login` → obtém token de acesso
 
-##### Ver Detalhes de um Produto
-* **Endpoint:** `GET /api/produtos/{id}`
-* **Descrição:** Retorna os detalhes completos de um único produto, incluindo as suas variações.
+- **Produtos**
+  - `GET /api/produtos`
+  - `POST /api/produtos`
+  - `GET /api/produtos/{id}`
+  - `PUT /api/produtos/{id}`
+  - `DELETE /api/produtos/{id}`
 
-##### Atualizar um Produto
-* **Endpoint:** `PUT /api/produtos/{id}`
-* **Descrição:** Atualiza os dados de um produto base existente.
+- **Variações de Produto**
+  - `POST /api/produtos/{id}/variations`
+  - `PUT /api/variations/{id}`
+  - `DELETE /api/variations/{id}`
 
-##### Apagar um Produto
-* **Endpoint:** `DELETE /api/produtos/{id}`
-* **Descrição:** Realiza um "Soft Delete" no produto, arquivando-o sem perder o histórico.
+- **Movimentações de Estoque**
+  - `POST /api/movimentacoes`
 
----
-#### **Variações de Produto**
+- **Busca**
+  - `GET /api/search-by-code/{code}`
 
-##### Criar uma Nova Variação
-* **Endpoint:** `POST /api/produtos/{id}/variations`
-* **Descrição:** Cria uma nova variação (SKU) associada a um produto existente.
-* **Corpo da Requisição (`x-www-form-urlencoded`):**
-    * `sku` (string, obrigatório, único)
-    * `preco_venda` (numeric, obrigatório)
-    * `preco_custo` (numeric, opcional)
-    * `estoque_minimo` (integer, opcional)
-    * `attribute_values[]` (array, obrigatório): Um array de IDs dos `valor_atributos` (ex: `attribute_values[]=1&attribute_values[]=6`).
+- **Dados Mestres (somente leitura)**
+  - `GET /api/categorias`
+  - `GET /api/marcas`
+  - `GET /api/clientes`
+  - `GET /api/fornecedores`
 
-##### Atualizar uma Variação
-* **Endpoint:** `PUT /api/variations/{id}`
-* **Descrição:** Atualiza os detalhes (SKU, preço, etc.) de uma variação existente.
-
-##### Apagar uma Variação
-* **Endpoint:** `DELETE /api/variations/{id}`
-* **Descrição:** Realiza um "Soft Delete" na variação.
-
----
-#### **Movimentações de Estoque**
-
-##### Registrar uma Nova Movimentação
-* **Endpoint:** `POST /api/movimentacoes`
-* **Descrição:** O endpoint mais importante para integrações. Regista uma nova entrada ou saída, aplicando automaticamente a lógica de negócio (ex: FEFO para saídas).
-* **Corpo da Requisição (`x-www-form-urlencoded`):**
-    * `product_variation_id` (integer, obrigatório)
-    * `tipo` (string, obrigatório): `entrada` ou `saida`.
-    * `quantidade` (integer, obrigatório)
-    * `motivo` (string, opcional)
-    * `fornecedor_id` (integer, opcional, usado para `entrada`)
-    * `cliente_id` (integer, opcional, usado para `saida`)
-    * `lote` (string, opcional, usado para `entrada`)
-    * `data_validade` (date, opcional, formato `YYYY-MM-DD`, usado para `entrada`)
-
----
-#### **Busca**
-
-##### Buscar Produto por Código
-* **Endpoint:** `GET /api/search-by-code/{code}`
-* **Descrição:** Endpoint otimizado para aplicações mobile. Procura uma variação pelo seu `SKU` ou pelo `código_barras` do produto principal.
-* **Resposta de Sucesso (200 OK):** Um recurso completo da variação encontrada, incluindo detalhes dos lotes.
-* **Resposta de Falha (404 Not Found):**
-    ```json
-    {
-        "message": "Nenhum produto ou variação encontrado com este código."
-    }
-    ```
-
----
-#### **Dados Mestres (Apenas Leitura)**
-
-* `GET /api/categorias`
-* `GET /api/marcas`
-* `GET /api/clientes`
-* `GET /api/fornecedores`
+> Todos os endpoints protegidos já vêm configurados para usar o **token via Bearer**.
 
 ---
 

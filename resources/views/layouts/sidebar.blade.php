@@ -83,7 +83,7 @@
                 Administração
             </h3>
             <x-side-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                Utilizadores
+                Usuários
             </x-side-nav-link>
         @endcan
     </nav>

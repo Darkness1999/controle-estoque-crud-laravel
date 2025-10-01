@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::get('/marcas', [MarcaApiController::class, 'index']);
 
-    Route::get('/clientes', [ClienteApiController::class, 'index']);
+    Route::apiResource('clientes', ClienteApiController::class);
     
     Route::get('/fornecedores', [FornecedorApiController::class, 'index']);
 

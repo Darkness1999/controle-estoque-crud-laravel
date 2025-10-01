@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MovimentacaoResource;
+use App\Models\MovimentacaoEstoque;
 use App\Services\EstoqueService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +16,11 @@ class MovimentacaoApiController extends Controller
     public function __construct(EstoqueService $estoqueService)
     {
         $this->estoqueService = $estoqueService;
+    }
+
+    public function index()
+    {
+        return MovimentacaoResource::collection(MovimentacaoEstoque::with(['productVariation.produto', 'user'])->latest()->paginate(20));
     }
 
     public function store(Request $request)
@@ -49,5 +56,10 @@ class MovimentacaoApiController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400); // Bad Request
         }
+    }
+
+    public function show(MovimentacaoEstoque $movimentaco) // Atenção ao nome da variável
+    {
+        return new MovimentacaoResource($movimentaco->load(['productVariation.produto', 'user']));
     }
 }

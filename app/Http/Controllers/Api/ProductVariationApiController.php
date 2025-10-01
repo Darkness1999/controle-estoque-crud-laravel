@@ -36,6 +36,14 @@ class ProductVariationApiController extends Controller
     }
 
     /**
+     * Lista todas as variações de um produto específico.
+     */
+    public function index(Produto $produto)
+    {
+        return ProductVariationResource::collection($produto->variations);
+    }
+
+    /**
      * Atualiza uma variação existente.
      */
     public function update(Request $request, ProductVariation $variation)

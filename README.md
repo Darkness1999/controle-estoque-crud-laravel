@@ -301,7 +301,7 @@ Este guia foi feito para que qualquer pessoa, mesmo sem experiência, consiga te
 
 1. Abra o Postman.
 2. Clique em **File → Import**.
-3. Selecione o arquivo da coleção JSON (fornecido junto com o projeto, na pasta raiz, chamado: **EndPoints-Controle-de-Estoque-API.postman_collection**).
+3. Selecione o arquivo da coleção JSON (fornecido junto com o projeto, na pasta raiz, chamado: **controle-estoque-API.postman_collection.json**).
 4. Clique em **Import**.
 
 > Após a importação, você verá todos os endpoints organizados em pastas, com exemplos de requisições já configurados.

